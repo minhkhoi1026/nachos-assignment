@@ -37,6 +37,7 @@
 
 #define SC_Add		42
 #define SC_ReadNum 43
+#define SC_ReadString 48
 
 #ifndef IN_ASM
 
@@ -50,7 +51,8 @@
  * from the system call entry point in exception.cc.
  */
 
-int ReadNum();
+void ReadString(char buffer[], int length);
+
 
 /* Stop Nachos, and print out performance stats */
 void Halt();		
