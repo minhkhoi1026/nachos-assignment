@@ -83,6 +83,17 @@ ExceptionHandler(ExceptionType which)
 					ASSERTNOTREACHED();
 					break;
 				}
+
+				case SC_PrintString: {
+					int bufferUser = kernel->machine->ReadRegister(4);
+					SysPrintString(bufferUser);
+					
+					IncreasePC();
+					return;
+
+					ASSERTNOTREACHED();
+					break;
+				}
 	
 				case SC_Halt:
 					DEBUG(dbgSys, "Shutdown, initiated by user program.\n");

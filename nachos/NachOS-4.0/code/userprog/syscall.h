@@ -38,6 +38,7 @@
 #define SC_Add		42
 #define SC_ReadNum 43
 #define SC_ReadString 48
+#define SC_PrintString 49
 
 #ifndef IN_ASM
 
@@ -53,6 +54,7 @@
 
 void ReadString(char buffer[], int length);
 
+void PrintString(char buffer[]);
 
 /* Stop Nachos, and print out performance stats */
 void Halt();		

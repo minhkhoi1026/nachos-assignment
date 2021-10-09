@@ -14,6 +14,8 @@
 #include "kernel.h"
 #include "synchconsole.h"
 
+#define MAX_PRINT_LENGTH 512
+
 /*
 Input: - User space address (int)
 - Limit of buffer (int)
@@ -34,7 +36,33 @@ int System2User(int virtAddr,int length, char* buffer)
 	return i;
 }
 
+/*
+Input: - User space address (int)
+- Limit of buffer (int)
+Output:- Buffer (char*)
+Purpose: Copy buffer from User memory space to System memory space
+*/
+char* User2System(int virtAddr,int limit)
+{
+  int i; // index
+  int charAsInt;
+  char* kernelBuf = NULL;
+  kernelBuf = new char[limit + 1]; //need for terminal string
 
+  if (kernelBuf == NULL)
+    return kernelBuf;
+
+  memset(kernelBuf, 0, limit + 1);
+  
+  for (i = 0; i < limit; i++)
+  {
+    kernel->machine->ReadMem(virtAddr + i, 1, &charAsInt);
+    kernelBuf[i] = (char)charAsInt;
+    if (charAsInt == 0)
+      break;
+  }
+  return kernelBuf;
+}
 
 void SysReadString(int bufferUser, int maxLength) {
   // if maxLength is <= 0 then halt system
@@ -75,6 +103,14 @@ void SysReadString(int bufferUser, int maxLength) {
   System2User(bufferUser, length, bufferKernel);
 
   delete[] bufferKernel;
+}
+
+void SysPrintString(int bufferUser) {
+  char* bufferKernel = User2System(bufferUser, MAX_PRINT_LENGTH);
+  for (int i = 0; i < MAX_PRINT_LENGTH; ++i) {
+    if (bufferKernel[i] == '\0') break; // end of string
+    kernel->synchConsoleOut->PutChar(bufferKernel[i]);
+  }
 }
 
 void SysHalt()
