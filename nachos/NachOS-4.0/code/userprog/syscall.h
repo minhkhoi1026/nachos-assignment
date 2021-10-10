@@ -36,7 +36,9 @@
 #define SC_ThreadJoin   15
 
 #define SC_Add		42
-#define SC_ReadNum 43
+#define SC_ReadNum 	43
+#define SC_WriteNum	44
+#define SC_RandomNum	45
 
 #ifndef IN_ASM
 
@@ -51,6 +53,10 @@
  */
 
 int ReadNum();
+
+void WriteNum();
+
+int RandomNum();
 
 /* Stop Nachos, and print out performance stats */
 void Halt();		
