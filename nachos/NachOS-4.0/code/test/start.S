@@ -50,6 +50,22 @@ ReadNum:
 	j 	$31
 	.end ReadNum
 
+	.globl WriteNum
+	.ent	WriteNum
+WriteNum:
+	addiu $2,$0,SC_WriteNum
+	syscall
+	j 	$31
+	.end WriteNum
+
+	.globl RandomNum
+	.ent	RandomNum
+RandomNum:
+	addiu $2,$0,SC_RandomNum
+	syscall
+	j 	$31
+	.end RandomNum
+
 	.globl Halt
 	.ent	Halt
 Halt:
