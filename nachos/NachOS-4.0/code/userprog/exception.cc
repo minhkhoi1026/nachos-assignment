@@ -109,11 +109,27 @@ ExceptionHandler(ExceptionType which)
 			switch(type) {
 				case SC_ReadNum: {
 					int result = SysReadNum();
-					DEBUG(dbgSys, "My result of READNUM is" << result);
 					kernel->machine->WriteRegister(2, (int)result);
 					increasePC();
 					return;
-
+					ASSERTNOTREACHED();
+					break;
+				}
+				case SC_ReadChar: {
+					int result = SysReadChar();
+					kernel->machine->WriteRegister(2, (int)result);
+					DEBUG(dbgSys, "Read char " << (int)result << '\n');
+					increasePC();
+					return;
+					ASSERTNOTREACHED();
+					break;
+				}
+				case SC_PrintChar: {
+					int result = kernel->machine->ReadRegister(4);
+					DEBUG(dbgSys, "Print char " << (int)result << '\n');
+					SysPrintChar((char)result);
+					increasePC();
+					return;
 					ASSERTNOTREACHED();
 					break;
 				}
