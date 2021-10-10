@@ -18,6 +18,7 @@ main()
     int count;
     for (count = 0; count <255; count++){
         PrintChar((char)count);
+        PrintChar(' ');
     }
     Halt();
     /* not reached */
