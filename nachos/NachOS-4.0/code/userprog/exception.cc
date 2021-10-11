@@ -25,6 +25,19 @@
 #include "main.h"
 #include "syscall.h"
 #include "ksyscall.h"
+
+void IncreasePC() {
+	/* Modify return point */
+	/* set previous programm counter (debugging only)*/
+	kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
+
+	/* set programm counter to next instruction (all Instructions are 4 byte wide)*/
+	kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
+	
+	/* set next programm counter for brach execution */
+	kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg)+4);
+}
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -48,18 +61,6 @@
 //	is in machine.h.
 //----------------------------------------------------------------------
 
-void increasePC() {
-	/* Modify return point */
-	/* set previous programm counter (debugging only)*/
-	kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
-
-	/* set programm counter to next instruction (all Instructions are 4 byte wide)*/
-	kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
-	
-	/* set next programm counter for brach execution */
-	kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg)+4);
-}
-
 void
 ExceptionHandler(ExceptionType which)
 {
@@ -80,6 +81,42 @@ ExceptionHandler(ExceptionType which)
 					ASSERTNOTREACHED();
 					break;
 				}
+				case SC_RandomNum: {
+					int result = SysRandomNum();
+					kernel->machine->WriteRegister(2, result);
+
+					DEBUG(dbgSys, "Random number is " << result);
+					IncreasePC();
+					return;
+
+					ASSERTNOTREACHED();
+					break;
+				}
+
+				case SC_ReadString: {
+					int bufferUser = kernel->machine->ReadRegister(4);
+					int length = kernel->machine->ReadRegister(5); 
+
+					SysReadString(bufferUser, length);
+					
+					IncreasePC();
+					return;
+
+					ASSERTNOTREACHED();
+					break;
+				}
+
+				case SC_PrintString: {
+					int bufferUser = kernel->machine->ReadRegister(4);
+					SysPrintString(bufferUser);
+					
+					IncreasePC();
+					return;
+
+					ASSERTNOTREACHED();
+					break;
+				}
+	
 				case SC_Halt:
 					DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
 
@@ -100,17 +137,7 @@ ExceptionHandler(ExceptionType which)
 					/* Prepare Result */
 					kernel->machine->WriteRegister(2, (int)result);
 					
-					/* Modify return point */
-					{
-					/* set previous programm counter (debugging only)*/
-					kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
-
-					/* set programm counter to next instruction (all Instructions are 4 byte wide)*/
-					kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
-					
-					/* set next programm counter for brach execution */
-					kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg)+4);
-					}
+					IncreasePC();
 
 					return;
 					
@@ -122,6 +149,7 @@ ExceptionHandler(ExceptionType which)
 					break;
 			}
 			break;
+		
 		default:
 			cerr << "Unexpected user mode exception" << (int)which << "\n";
 			break;
