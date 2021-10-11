@@ -17,6 +17,18 @@
 #define MAX_PRINT_LENGTH 512
 #define MAX_RAND 1e9
 
+int SysReadNum() {
+  char digitChar;
+  int result = 0; 
+  do
+  {
+    digitChar = kernel->synchConsoleIn->GetChar();
+    if ('0' <= digitChar && digitChar <= '9')
+      result = result * 10 + int(digitChar - '0');
+  } while (digitChar != '\n');
+  return result;
+}
+
 int SysRandomNum() {
   srand(kernel->stats->totalTicks); // set seed number
   return rand() * 1LL * rand() % MAX_RAND;

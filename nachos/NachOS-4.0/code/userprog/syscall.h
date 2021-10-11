@@ -56,17 +56,19 @@
  * from the system call entry point in exception.cc.
  */
 
-<<<<<<< HEAD
+
 int ReadNum();
-int ReadChar();
-void PrintChar(char input);
-=======
+
 int RandomNum();
+
+int ReadChar();
+
+void PrintChar(char input);
+
 
 void ReadString(char buffer[], int length);
 
 void PrintString(char buffer[]);
->>>>>>> khoi
 
 /* Stop Nachos, and print out performance stats */
 void Halt();		

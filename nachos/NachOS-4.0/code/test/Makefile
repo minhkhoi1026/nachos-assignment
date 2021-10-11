@@ -119,7 +119,13 @@ all: $(PROGRAMS)
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
-
+	
+readnum.o: readnum.c
+	$(CC) $(CFLAGS) -c readnum.c
+readnum: readnum.o start.o
+	$(LD) $(LDFLAGS) start.o readnum.o -o readnum.coff
+	$(COFF2NOFF) readnum.coff readnum
+	
 randnum.o: randnum.c
 	$(CC) $(CFLAGS) -c randnum.c
 randnum: randnum.o start.o
