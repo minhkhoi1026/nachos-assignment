@@ -41,7 +41,14 @@ __start:
  * 	convention on the MIPS.
  * -------------------------------------------------------------
  */
-
+	.globl ReadNum
+	.ent	ReadNum
+ReadNum:
+	addiu $2,$0,SC_ReadNum
+	syscall
+	j 	$31
+	.end ReadNum
+	
  	.globl RandomNum
 	.ent	RandomNum
 RandomNum:
