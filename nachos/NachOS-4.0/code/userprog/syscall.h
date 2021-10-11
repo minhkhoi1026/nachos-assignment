@@ -38,8 +38,8 @@
 #define SC_Add		42
 #define SC_ReadNum 43
 #define SC_PrintNum 44
-#define SC_ReadChar 45
-#define SC_PrintChar 46
+#define SC_ReadChar 46
+#define SC_PrintChar 47
 
 #ifndef IN_ASM
 
