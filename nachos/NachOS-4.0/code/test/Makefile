@@ -112,13 +112,19 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readstring printstring iostring help
+PROGRAMS = add halt shell matmult sort segments readstring printstring iostring help randnum
 endif
 
 all: $(PROGRAMS)
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
+
+randnum.o: randnum.c
+	$(CC) $(CFLAGS) -c randnum.c
+randnum: randnum.o start.o
+	$(LD) $(LDFLAGS) start.o randnum.o -o randnum.coff
+	$(COFF2NOFF) randnum.coff randnum
 
 readstring.o: readstring.c
 	$(CC) $(CFLAGS) -c readstring.c

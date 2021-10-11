@@ -71,6 +71,18 @@ ExceptionHandler(ExceptionType which)
     switch (which) {
 		case SyscallException:
 			switch(type) {
+				case SC_RandomNum: {
+					int result = SysRandomNum();
+					kernel->machine->WriteRegister(2, result);
+
+					DEBUG(dbgSys, "Random number is " << result);
+					IncreasePC();
+					return;
+
+					ASSERTNOTREACHED();
+					break;
+				}
+
 				case SC_ReadString: {
 					int bufferUser = kernel->machine->ReadRegister(4);
 					int length = kernel->machine->ReadRegister(5); 

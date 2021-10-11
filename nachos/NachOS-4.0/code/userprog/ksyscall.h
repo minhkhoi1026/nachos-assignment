@@ -15,6 +15,12 @@
 #include "synchconsole.h"
 
 #define MAX_PRINT_LENGTH 512
+#define MAX_RAND 1e9
+
+int SysRandomNum() {
+  srand(kernel->stats->totalTicks); // set seed number
+  return rand() * 1LL * rand() % MAX_RAND;
+}
 
 /*
 Input: - User space address (int)
@@ -73,7 +79,7 @@ void SysReadString(int bufferUser, int maxLength) {
 
   char* bufferKernel = new char[maxLength];
 
-  // if kernel buffer's memory is allocated then halt system
+  // if kernel buffer's memory is not allocated then halt system
   if (!bufferKernel) {
     DEBUG(dbgSys, "Cannot allocate kernel buffer for read string!");
     kernel->interrupt->Halt();
@@ -107,6 +113,14 @@ void SysReadString(int bufferUser, int maxLength) {
 
 void SysPrintString(int bufferUser) {
   char* bufferKernel = User2System(bufferUser, MAX_PRINT_LENGTH);
+
+  // if kernel buffer's memory is not allocated then halt system
+  if (!bufferKernel) {
+    DEBUG(dbgSys, "Cannot allocate kernel buffer for print string!");
+    kernel->interrupt->Halt();
+  }
+
+  // print at most MAX_PRINT_LENGTH character
   for (int i = 0; i < MAX_PRINT_LENGTH; ++i) {
     if (bufferKernel[i] == '\0') break; // end of string
     kernel->synchConsoleOut->PutChar(bufferKernel[i]);
