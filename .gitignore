@@ -6,6 +6,10 @@
 *.lo
 *.o
 *.obj
+<<<<<<< HEAD
+=======
+*.coff
+>>>>>>> master
 
 # Precompiled Headers
 *.gch
@@ -25,11 +29,18 @@
 *.la
 *.a
 *.lib
+<<<<<<< HEAD
 *.coff
+=======
+>>>>>>> master
 
 # Executables
 *.exe
 *.out
 *.app
 
+<<<<<<< HEAD
 .vscode
+=======
+.vscode
+>>>>>>> master
