@@ -59,6 +59,12 @@
 
 int ReadNum();
 
+<<<<<<< HEAD
+void WriteNum(int n);
+
+int RandomNum();
+
+=======
 int RandomNum();
 
 int ReadChar();
@@ -70,6 +76,7 @@ void ReadString(char buffer[], int length);
 
 void PrintString(char buffer[]);
 
+>>>>>>> master
 /* Stop Nachos, and print out performance stats */
 void Halt();		
 
