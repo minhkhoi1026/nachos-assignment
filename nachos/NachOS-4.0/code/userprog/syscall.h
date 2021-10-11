@@ -36,6 +36,7 @@
 #define SC_ThreadJoin   15
 
 #define SC_Add		42
+#define SC_ReadNum 43
 #define SC_RandomNum 45
 #define SC_ReadString 48
 #define SC_PrintString 49
@@ -51,6 +52,8 @@
  * are then invoked in the Nachos kernel, after appropriate error checking, 
  * from the system call entry point in exception.cc.
  */
+
+int ReadNum();
 
 int RandomNum();
 
