@@ -42,13 +42,29 @@ __start:
  * -------------------------------------------------------------
  */
 
-	.globl ReadNum
-	.ent	ReadNum
-ReadNum:
-	addiu $2,$0,SC_ReadNum
+ 	.globl RandomNum
+	.ent	RandomNum
+RandomNum:
+	addiu $2,$0,SC_RandomNum
 	syscall
 	j 	$31
-	.end ReadNum
+	.end RandomNum
+
+ 	.globl ReadString
+	.ent	ReadString
+ReadString:
+	addiu $2,$0,SC_ReadString
+	syscall
+	j 	$31
+	.end ReadString
+
+ 	.globl PrintString
+	.ent	PrintString
+PrintString:
+	addiu $2,$0,SC_PrintString
+	syscall
+	j 	$31
+	.end PrintString
 
 	.globl ReadChar
 	.ent	ReadChar

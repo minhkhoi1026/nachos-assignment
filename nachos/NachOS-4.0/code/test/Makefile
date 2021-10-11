@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readnum ascii readprintchar
+PROGRAMS = add halt shell matmult sort segments readstring printstring iostring help randnum ascii readprintchar
 endif
 
 all: $(PROGRAMS)
@@ -120,11 +120,35 @@ all: $(PROGRAMS)
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
 
-readnum.o: readnum.c
-	$(CC) $(CFLAGS) -c readnum.c
-readnum: readnum.o start.o
-	$(LD) $(LDFLAGS) start.o readnum.o -o readnum.coff
-	$(COFF2NOFF) readnum.coff readnum
+randnum.o: randnum.c
+	$(CC) $(CFLAGS) -c randnum.c
+randnum: randnum.o start.o
+	$(LD) $(LDFLAGS) start.o randnum.o -o randnum.coff
+	$(COFF2NOFF) randnum.coff randnum
+
+readstring.o: readstring.c
+	$(CC) $(CFLAGS) -c readstring.c
+readstring: readstring.o start.o
+	$(LD) $(LDFLAGS) start.o readstring.o -o readstring.coff
+	$(COFF2NOFF) readstring.coff readstring
+
+printstring.o: printstring.c
+	$(CC) $(CFLAGS) -c printstring.c
+printstring: printstring.o start.o
+	$(LD) $(LDFLAGS) start.o printstring.o -o printstring.coff
+	$(COFF2NOFF) printstring.coff printstring
+
+iostring.o: iostring.c
+	$(CC) $(CFLAGS) -c iostring.c
+iostring: iostring.o start.o
+	$(LD) $(LDFLAGS) start.o iostring.o -o iostring.coff
+	$(COFF2NOFF) iostring.coff iostring
+
+help.o: help.c
+	$(CC) $(CFLAGS) -c help.c
+help: help.o start.o
+	$(LD) $(LDFLAGS) start.o help.o -o help.coff
+	$(COFF2NOFF) help.coff help
 
 ascii.o: ascii.c
 	$(CC) $(CFLAGS) -c ascii.c

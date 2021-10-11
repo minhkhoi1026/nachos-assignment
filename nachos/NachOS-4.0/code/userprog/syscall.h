@@ -38,8 +38,11 @@
 #define SC_Add		42
 #define SC_ReadNum 43
 #define SC_PrintNum 44
+#define SC_RandomNum 45
 #define SC_ReadChar 46
 #define SC_PrintChar 47
+#define SC_ReadString 48
+#define SC_PrintString 49
 
 #ifndef IN_ASM
 
@@ -53,9 +56,17 @@
  * from the system call entry point in exception.cc.
  */
 
+<<<<<<< HEAD
 int ReadNum();
 int ReadChar();
 void PrintChar(char input);
+=======
+int RandomNum();
+
+void ReadString(char buffer[], int length);
+
+void PrintString(char buffer[]);
+>>>>>>> khoi
 
 /* Stop Nachos, and print out performance stats */
 void Halt();		
