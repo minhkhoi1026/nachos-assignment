@@ -71,6 +71,16 @@ ExceptionHandler(ExceptionType which)
     switch (which) {
 		case SyscallException:
 			switch(type) {
+				case SC_ReadNum: {
+					int result = SysReadNum();
+					DEBUG(dbgSys, "My result of READNUM is" << result);
+					kernel->machine->WriteRegister(2, (int)result);
+					increasePC();
+					return;
+
+					ASSERTNOTREACHED();
+					break;
+				}
 				case SC_RandomNum: {
 					int result = SysRandomNum();
 					kernel->machine->WriteRegister(2, result);
