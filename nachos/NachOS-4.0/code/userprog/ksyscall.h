@@ -26,7 +26,6 @@ int SysReadNum() {
     if ('0' <= digitChar && digitChar <= '9')
       result = result * 10 + int(digitChar - '0');
   } while (digitChar != '\n');
-
   return result;
 }
 
