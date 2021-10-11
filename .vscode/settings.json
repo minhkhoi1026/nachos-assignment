@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "functional": "cpp",
-        "syscall.h": "c",
-        "chrono": "c",
-        "algorithm": "c"
-    }
-}
