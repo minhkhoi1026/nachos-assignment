@@ -145,7 +145,7 @@ ExceptionHandler(ExceptionType which)
 					int result = SysReadChar();
 					kernel->machine->WriteRegister(2, (int)result);
 					DEBUG(dbgSys, "Read char " << (int)result << '\n');
-					increasePC();
+					IncreasePC();
 					return;
 					ASSERTNOTREACHED();
 					break;
@@ -154,7 +154,7 @@ ExceptionHandler(ExceptionType which)
 					int result = kernel->machine->ReadRegister(4);
 					DEBUG(dbgSys, "Print char " << (int)result << '\n');
 					SysPrintChar((char)result);
-					increasePC();
+					IncreasePC();
 					return;
 					ASSERTNOTREACHED();
 					break;

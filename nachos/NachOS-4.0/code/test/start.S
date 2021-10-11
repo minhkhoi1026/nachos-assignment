@@ -48,6 +48,14 @@ ReadNum:
 	syscall
 	j 	$31
 	.end ReadNum
+
+	.globl PrintNum
+	.ent	PrintNum
+PrintNum:
+	addiu $2,$0,SC_PrintNum
+	syscall
+	j 	$31
+	.end PrintNum
 	
  	.globl RandomNum
 	.ent	RandomNum
@@ -56,22 +64,6 @@ RandomNum:
 	syscall
 	j 	$31
 	.end RandomNum
-
- 	.globl ReadString
-	.ent	ReadString
-ReadString:
-	addiu $2,$0,SC_ReadString
-	syscall
-	j 	$31
-	.end ReadString
-
- 	.globl PrintString
-	.ent	PrintString
-PrintString:
-	addiu $2,$0,SC_PrintString
-	syscall
-	j 	$31
-	.end PrintString
 
 	.globl ReadChar
 	.ent	ReadChar
@@ -89,21 +81,21 @@ PrintChar:
 	j 	$31
 	.end PrintChar
 
-	.globl PrintNum
-	.ent	PrintNum
-PrintNum:
-	addiu $2,$0,SC_PrintNum
+ 	.globl ReadString
+	.ent	ReadString
+ReadString:
+	addiu $2,$0,SC_ReadString
 	syscall
 	j 	$31
-	.end PrintNum
+	.end ReadString
 
-	.globl RandomNum
-	.ent	RandomNum
-RandomNum:
-	addiu $2,$0,SC_RandomNum
+ 	.globl PrintString
+	.ent	PrintString
+PrintString:
+	addiu $2,$0,SC_PrintString
 	syscall
 	j 	$31
-	.end RandomNum
+	.end PrintString
 
 	.globl Halt
 	.ent	Halt

@@ -1,5 +1,13 @@
 #include "syscall.h"
 
+// function to compare two integer base on mode
+int cmp(int a, int b, int mode) {
+    if (a < b && mode == 0)
+        return 1;
+    if (a > b && mode == 1)
+        return 1;
+    return 0;
+}
 
 int main()
 {
@@ -10,31 +18,33 @@ int main()
     int tmp;
     int a[100];
     
-    //chọn mode
+    //chose mode (ascending/descending)
     do
     {
+        PrintString("What order do you want?\n0.Ascending\n1.Descending\n");
         mode = ReadNum();
     } while (mode != 0 && mode != 1);
     
-
-    //nhập n
+    //read n as size for array
     do
     {
-       n = ReadNum();
+        PrintString("Input size of array n (n > 0)\n");
+        n = ReadNum();
     } while (n <= 0);
 
-    // nhập mảng
-    for (; i < n; i++)
+    // read array
+    PrintString("Input integer array of size n\n");
+    for (i = 0; i < n; i++)
     {
         a[i] = ReadNum();
     }
 
-    // bubble sort tăng dần
+    // bubble sort
     for (i = 0; i < n - 1; i++)
     {
         for (j = 0; j < n - i - 1; j++)
         {
-            if (a[j] > a[j + 1])
+            if (!cmp(a[j], a[j + 1], mode))
             {
                 tmp = a[j];
                 a[j] = a[j + 1];
@@ -43,21 +53,12 @@ int main()
         }
     }
 
-    //xoay nguoc mang neu sort descending
-    if (mode == 1) i = 0;
-    {
-        for (; i <= n/2 - 1; i++)
-        {
-            tmp = a[i];
-            a[i] = a[n - 1 - i];
-            a[n - 1 -i] = tmp;
-        }
-    }
-    
-    //in mảng sau khi đã sort
+    // print array after sort
     i = 0;
     for (; i < n; i++) {
         PrintNum(a[i]);
+        PrintChar(' ');
     }
+        
     Halt();
 }

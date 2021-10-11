@@ -1,6 +1,6 @@
 #include "syscall.h"
 
 int main() {
-    PrintString("dfasfsadfsadf");
+    PrintString("nachos is fun\n\t");
     Halt();
 }

@@ -1,7 +1,7 @@
 #include "syscall.h"
 
 int main() {
-    char* buffer;
-    ReadString(buffer, 5);
+    char buffer[20];
+    ReadString(buffer, 20);
     Halt();
 }

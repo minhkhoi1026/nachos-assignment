@@ -50,7 +50,6 @@ int SysReadNum() {
 }
 
  void SysPrintNum (int n) {
-   int len = 0;
    char *digits = new char[10];
    bool isNeg = false;
    int i = 0;
@@ -86,7 +85,7 @@ int SysReadNum() {
 
 int SysRandomNum() {
   srand(kernel->stats->totalTicks); // set seed number
-  return rand() * 1LL * rand() % MAX_RAND;
+  return rand() * 1LL * rand() % (long long)(MAX_RAND);
 }
 
 /*
@@ -231,10 +230,5 @@ int SysAdd(int op1, int op2)
 {
   return op1 + op2;
 }
-
-
-
-
-
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */
