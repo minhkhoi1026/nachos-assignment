@@ -25,6 +25,19 @@
 #include "main.h"
 #include "syscall.h"
 #include "ksyscall.h"
+
+void IncreasePC() {
+	/* Modify return point */
+	/* set previous programm counter (debugging only)*/
+	kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
+
+	/* set programm counter to next instruction (all Instructions are 4 byte wide)*/
+	kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
+	
+	/* set next programm counter for brach execution */
+	kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg)+4);
+}
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -48,18 +61,6 @@
 //	is in machine.h.
 //----------------------------------------------------------------------
 
-void IncreasePC() {
-	/* Modify return point */
-	/* set previous programm counter (debugging only)*/
-	kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
-
-	/* set programm counter to next instruction (all Instructions are 4 byte wide)*/
-	kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
-	
-	/* set next programm counter for brach execution */
-	kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg)+4);
-}
-
 void
 ExceptionHandler(ExceptionType which)
 {
@@ -68,88 +69,77 @@ ExceptionHandler(ExceptionType which)
     DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
     switch (which) {
-      case SyscallException:
-	switch(type) {
-	  case SC_ReadNum: {
-	    int result = SysReadNum();
-	    DEBUG(dbgSys, "My result of ReadNum is " << result);
-	    kernel->machine->WriteRegister(2, (int)result);
-	    IncreasePC();
-	    return;
+		case SyscallException:
+			switch(type) {
+				case SC_ReadNum: {
+					int result = SysReadNum();
+					DEBUG(dbgSys, "My result of ReadNum is " << result);
+					kernel->machine->WriteRegister(2, (int)result);
+					IncreasePC();
+					return;
 
-	    ASSERTNOTREACHED();
-	    break;
-	  }
-	  
-	  case SC_Write_Num: {
-	    DEBUG(dbgSys, "My result of WriteNum is ");
-	    SysWriteNum();
-	    IncreasePC();
-	    return;
+					ASSERTNOTREACHED();
+					break;
+				}
+				
+				case SC_PrintNum: {
+					DEBUG(dbgSys, "My result of WriteNum is ");
+					int tmp = kernel->machine->ReadRegister(4);
+					SysPrintNum(tmp);
+					IncreasePC();
+					return;
 
-	    ASSERTNOTREACHED();
-	    break;
-	  }
+					ASSERTNOTREACHED();
+					break;
+				}
 
-	  case SC_RandomNum: {
-	    int result = SysRandomNum();
-	    DEBUG(dbgSys, "My result of RandomNum is " << result);
-	    kernel->machine->WriteRegister(2, (int)result);
-	    IncreasePC();
-	    return;
+				case SC_RandomNum: {
+					int result = SysRandomNum();
+					DEBUG(dbgSys, "My result of RandomNum is " << result);
+					kernel->machine->WriteRegister(2, (int)result);
+					IncreasePC();
+					return;
 
-	    ASSERTNOTREACHED();
-	    break;
-	  }
+					ASSERTNOTREACHED();
+					break;
+				}
 
-      case SC_Halt: {
-	    DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
-	    SysHalt();
+				case SC_Halt:
+					DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
 
-	    ASSERTNOTREACHED();
-	    break;
-	  }
+					SysHalt();
 
-      case SC_Add: {
-	    DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
+					ASSERTNOTREACHED();
+					break;
+
+				case SC_Add:
+					DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
 					
-	/* Process SysAdd Systemcall*/
-	    int result;
-	    result = SysAdd(/* int op1 */(int)kernel->machine->ReadRegister(4),
-	/* int op2 */(int)kernel->machine->ReadRegister(5));
+					/* Process SysAdd Systemcall*/
+					int result;
+					result = SysAdd(/* int op1 */(int)kernel->machine->ReadRegister(4),
+							/* int op2 */(int)kernel->machine->ReadRegister(5));
 
-	    DEBUG(dbgSys, "Add returning with " << result << "\n");
-	/* Prepare Result */
-	    kernel->machine->WriteRegister(2, (int)result);
+					DEBUG(dbgSys, "Add returning with " << result << "\n");
+					/* Prepare Result */
+					kernel->machine->WriteRegister(2, (int)result);
 					
-	/* Modify return point */
-	    {
-	/* set previous programm counter (debugging only)*/
-		kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
+					IncreasePC();
 
-	/* set programm counter to next instruction (all Instructions are 4 byte wide)*/
-		kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
+					return;
 					
-	/* set next programm counter for brach execution */
-		kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg)+4);
-	    }
+					ASSERTNOTREACHED();
+					break;
 
-	    return;
-					
-	    ASSERTNOTREACHED();
-	    break;
-	  }
-
-	default: {
-	  cerr << "Unexpected system call " << type << "\n";
-	  break;
+				default:
+					cerr << "Unexpected system call " << type << "\n";
+					break;
+			}
+			break;
+		
+		default:
+			cerr << "Unexpected user mode exception" << (int)which << "\n";
+			break;
 	}
-	break;
-
-	default: {
-	  cerr << "Unexpected user mode exception" << (int)which << "\n";
-	  break;
-	}
-
     ASSERTNOTREACHED();
 }

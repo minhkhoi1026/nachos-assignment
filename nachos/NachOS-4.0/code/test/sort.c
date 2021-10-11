@@ -1,69 +1,63 @@
-/* sort.c 
- *    Test program to sort a large number of integers.
- *
- *    Intention is to stress virtual memory system.
- *
- *    Ideally, we could read the unsorted array off of the file system,
- *	and store the result back to the file system!
- */
-
-
-/*
-#define UNIX
-#define UNIX_DEBUG
-*/
-
-#ifdef UNIX
-#include <stdio.h>
-#define Exit exit
-#else
 #include "syscall.h"
-#endif /* UNIX */
 
-#define SIZE (1024)
 
-int A[SIZE];	/* size of physical memory; with code, we'll run out of space!*/
-
-int
-main()
+int main()
 {
-    int i, j, tmp;
+    int mode; //0 -> ascending sort; 1 -> descending sort
+    int n = 0;
+    int i = 0;
+    int j = 0;
+    int tmp;
+    int a[100];
+    
+    //chọn mode
+    do
+    {
+        mode = ReadNum();
+    } while (mode != 0 && mode != 1);
+    
 
-    /* first initialize the array, in reverse sorted order */
-    for (i = 0; i < SIZE; i++) {
-        A[i] = (SIZE-1) - i;
+    //nhập n
+    do
+    {
+       n = ReadNum();
+    } while (n <= 0);
+
+    // nhập mảng
+    for (; i < n; i++)
+    {
+        a[i] = ReadNum();
     }
 
-    /* then sort! */
-    for (i = 0; i < SIZE; i++) {
-        for (j = 0; j < (SIZE-1); j++) {
-	   if (A[j] > A[j + 1]) {	/* out of order -> need to swap ! */
-	      tmp = A[j];
-	      A[j] = A[j + 1];
-	      A[j + 1] = tmp;
-    	   }
+    // bubble sort tăng dần
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (a[j] > a[j + 1])
+            {
+                tmp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = tmp;
+            }
         }
     }
 
-#ifdef UNIX_DEBUG
-    for (i=0; i<SIZE; i++) {
-        printf("%4d ", A[i]);
-	if (((i+1) % 15) == 0) {
-		printf("\n");
+    //xoay nguoc mang neu sort descending
+    if (mode == 1) i = 0;
+    {
+        for (; i <= n/2 - 1; i++)
+        {
+            tmp = a[i];
+            a[i] = a[n - 1 - i];
+            a[n - 1 -i] = tmp;
         }
-        if (A[i] != i) {
-            fprintf(stderr, "Out of order A[%d] = %d\n", i, A[i]);
-            Exit(1);
-        }   
     }
-    printf("\n");
-#endif /* UNIX_DEBUG */
-
-    for (i=0; i<SIZE; i++) {
-        if (A[i] != i) {
-            Exit(1);
-        }   
+    
+    //in mảng sau khi đã sort
+    i = 0;
+    for (; i < n; i++) {
+        PrintNum(a[i]);
     }
-
-    Exit(0);
+    Halt();
 }

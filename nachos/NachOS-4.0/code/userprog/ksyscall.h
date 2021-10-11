@@ -16,73 +16,69 @@
 
 int SysReadNum() {
   char digitChar;
-  int result = 0; 
-  bool isNeg = false;
+  int result = 0;
   bool legal = true;
-  for (int i = 0; i >= 0; i++)
+  bool isNeg = false;
+  bool hasNum = false;
+  do
   {
-    digitChar = Kernel->SynchConsoleInput->GetChar();
-    if (i == 0)
-    {
-	if (digitChar == '-') {
-	  isNeg = true;
-	  continue; }
-	else if (ditgitChar == ' ')
-	  i--;
-	else if (digitChar >= '0' && digitChar <= '9')
-	  result = 10*result +(int)(digitChar - '0');
-	else 
-	  legal = false;
+    digitChar = kernel->synchConsoleIn->GetChar();
+    if (digitChar >= '0' && digitChar <= '9') {
+      result = result*10 + (int)(digitChar - '0');
+      hasNum = true;
     }
-    else 
+    else if (digitChar == '-')
     {
-	if (digitChar >='0' && digitChar <='9') 
-	  result = 10*result +(int)(digitChar -'0');
-	else if (digitChar == ' ' && i > 0) break;
-	else legal = false;
+      if (hasNum == true) legal = false;
+      else isNeg = true;
     }
-    
-  } 
-  
-  if (isNeg == true) result = -1*result;
+    else if (digitChar == ' ' || digitChar == '\n')
+    {
+      if (legal == false) break;
+      if (hasNum == false && isNeg == false) continue;
+      else break;
+    }
+    else legal = false;
+  }while (true);
 
+  if (isNeg == true) result = -result;
   if (legal == false) return 0;
-  return result;
+    return result;
 }
 
-void SysWriteNum (int n) {
-  n = Machine->ReadRegister(4);
-  int digits = 0;
-  if (n == 0) 
-	SynchConsoleOutput->PutChar('0');
+ void SysPrintNum (int n) {
+   int len = 0;
+   char *digits = new char[10];
+   bool isNeg = false;
+   int i = 0;
 
-  else 
-  {
-    if (n < 0)
-      SynchConsoleOutput->PutChar('-');
-  
-  for (int i = 1; i > 0; i = 10*i)
-  {
-     if (i <= n) digits++;
-     else break;
-  }
+   if (n == 0)
+   {
+     kernel->synchConsoleOut->PutChar('0');
+     return;
+   }
 
-  int i = 1;
-  for (int j = 1; j <= digits; j++)
-	i = 10*i;
-  
-  for (int j = 1; j <= digits; j++)
-  {
-    int tmp;
-    tmp = n/i;
-    SynchConsoleOutput((char)(tmp + 48));
-    n = n%i;
-    i = i/10;
-  }
-  }
-  IncreasePC();
+   if (n < 0)
+   {
+     isNeg = true;
+     n = -n;
+   }
+   
+   while (n > 0)
+   {
+     digits[i]=(char)(n%10+'0');
+     i++;
+     n/=10;
+   }
+
+  if (isNeg == true)
+    kernel->synchConsoleOut->PutChar('-');
+  for (int j = i -1; j >= 0; j--) 
+    kernel->synchConsoleOut->PutChar(digits[j]);
+
+  delete[] digits;
   return;
-}
+ }
 
 int SysRandomNum () {
 

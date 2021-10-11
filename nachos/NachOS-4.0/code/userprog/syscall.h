@@ -37,7 +37,7 @@
 
 #define SC_Add		42
 #define SC_ReadNum 	43
-#define SC_WriteNum	44
+#define SC_PrintNum	44
 #define SC_RandomNum	45
 
 #ifndef IN_ASM
@@ -54,7 +54,7 @@
 
 int ReadNum();
 
-void WriteNum();
+void WriteNum(int n);
 
 int RandomNum();
 
