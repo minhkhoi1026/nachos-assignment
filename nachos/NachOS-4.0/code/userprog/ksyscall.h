@@ -84,9 +84,37 @@ int SysReadNum() {
 
 
 int SysRandomNum() {
-  srand(kernel->stats->totalTicks); // set seed number
+  srand(kernel->stats->totalTicks + time(0)); // set seed number
   return rand() * 1LL * rand() % (long long)(MAX_RAND);
 }
+
+int SysReadChar() {
+  char wordChar;
+  wordChar = kernel->synchConsoleIn->GetChar();
+  if (wordChar > 31 && wordChar < 126){
+    return wordChar;
+  } else if (wordChar > 9 && wordChar < 12){
+      return wordChar;
+  }
+  else {
+    //printf("Ky tu nhap vao khong hop le!\n");
+    DEBUG('u', "\nERROR: Ky tu nhap vao khong hop le!");
+    return '\0';
+  }
+}
+
+void SysPrintChar(char wordChar) {
+  if (wordChar > 31 && wordChar < 126){
+    kernel->synchConsoleOut->PutChar(wordChar);
+  } else if (wordChar > 9 && wordChar < 12){      // Ky tu xuong dong va tab
+    kernel->synchConsoleOut->PutChar(wordChar);
+  }
+  else {
+    //printf("Ky tu in khong hop le!\n");
+    DEBUG('u', "\nERROR: Ky tu in khong hop le!");
+  }
+}
+
 
 /*
 Input: - User space address (int)
@@ -190,33 +218,6 @@ void SysPrintString(int bufferUser) {
   for (int i = 0; i < MAX_PRINT_LENGTH; ++i) {
     if (bufferKernel[i] == '\0') break; // end of string
     kernel->synchConsoleOut->PutChar(bufferKernel[i]);
-  }
-}
-
-int SysReadChar() {
-  char wordChar;
-  wordChar = kernel->synchConsoleIn->GetChar();
-  if (wordChar > 31 && wordChar < 126){
-    return wordChar;
-  } else if (wordChar > 9 && wordChar < 12){
-      return wordChar;
-  }
-  else {
-    //printf("Ky tu nhap vao khong hop le!\n");
-    DEBUG('u', "\nERROR: Ky tu nhap vao khong hop le!");
-    return '\0';
-  }
-}
-
-void SysPrintChar(char wordChar) {
-  if (wordChar > 31 && wordChar < 126){
-    kernel->synchConsoleOut->PutChar(wordChar);
-  } else if (wordChar > 9 && wordChar < 12){      // Ky tu xuong dong va tab
-    kernel->synchConsoleOut->PutChar(wordChar);
-  }
-  else {
-    //printf("Ky tu in khong hop le!\n");
-    DEBUG('u', "\nERROR: Ky tu in khong hop le!");
   }
 }
 
