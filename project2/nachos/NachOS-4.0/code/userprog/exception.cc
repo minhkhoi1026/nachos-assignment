@@ -112,7 +112,12 @@ ExceptionHandler(ExceptionType which)
 					int bufferUser = kernel->machine->ReadRegister(4);
 
 					int result = SysCreateFile(bufferUser);
-					DEBUG(dbgSys, " Create file result: " << result);
+					if (result == 0) {
+						DEBUG(dbgSys, "\nCreate file successful");
+					}
+					else {
+						DEBUG(dbgSys, "\nError when create file!");
+					}
 
 					kernel->machine->WriteRegister(2, (int)result);
 					

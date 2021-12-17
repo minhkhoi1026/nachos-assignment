@@ -68,24 +68,21 @@ char* User2System(int virtAddr,int limit)
 
 /************* system call for create file *****************/
 int SysCreateFile(int bufferUser) {
+  // read filename from user space
   char* filename = User2System(bufferUser, MAX_FILENAME_LENGTH);
 
   // if kernel buffer's memory is not allocated then halt system
   if (!filename) {
     DEBUG(dbgSys, "Cannot allocate kernel buffer for name string!");
-    return 0;
+    return -1;
   }
+  DEBUG(dbgSys, "Creating " << filename);
 
+  // create file with filename, then deallocate filename buffer, advoid memory leak
   int res = kernel->fileSystem->Create(filename);
-  if (res) {
-    DEBUG(dbgSys, "\nCreate file successful with name " <<  filename);
-  }
-  else {
-    DEBUG(dbgSys, "\nError when create file!");
-  }
-
   delete filename;
-  return res;
+  
+  return (res == 0) ? 0 : -1;
 }
 
 /************* system call for read number *****************/
@@ -118,7 +115,7 @@ int SysReadNum() {
 
   if (isNeg == true) result = -result;
   if (legal == false) return 0;
-    return result;
+  return result;
 }
 
 /************* system call for print number *****************/
