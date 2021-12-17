@@ -106,7 +106,7 @@ Kernel::Initialize()
     fileSystem = new FileSystem();
 #else
     fileSystem = new FileSystem(formatFlag);
-    
+    cout << "\nfile system with format flag " << int(formatFlag);
 #endif // FILESYS_STUB
     postOfficeIn = new PostOfficeInput(10);
     postOfficeOut = new PostOfficeOutput(reliability);
