@@ -82,7 +82,7 @@ int SysCreateFile(int bufferUser) {
   int res = kernel->fileSystem->Create(filename);
   delete filename;
   
-  return (res == 0) ? 0 : -1;
+  return (res == 1) ? 0 : -1;
 }
 
 /************* system call for read number *****************/
