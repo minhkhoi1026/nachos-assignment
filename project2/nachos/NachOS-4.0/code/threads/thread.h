@@ -82,6 +82,7 @@ class Thread {
     void *machineState[MachineStateSize];  // all registers except for stackTop
 
   public:
+    int processID;
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
 					// NOTE -- thread being deleted
@@ -89,6 +90,7 @@ class Thread {
 					// is called
 
     // basic thread operations
+     void FreeSpace();
 
     void Fork(VoidFunctionPtr func, void *arg); 
     				// Make thread run (*func)(arg)

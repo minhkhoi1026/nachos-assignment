@@ -101,6 +101,11 @@ Kernel::Initialize()
     synchConsoleIn = new SynchConsoleInput(consoleIn); // input from stdin
     synchConsoleOut = new SynchConsoleOutput(consoleOut); // output to stdout
     synchDisk = new SynchDisk();    //
+
+    addrLock = new Semaphore("addrLock", 1);
+    gPhysPageBitMap = new Bitmap(256);
+    processTable = new PTable(10);
+    semTable = new STable();
     
 #ifdef FILESYS_STUB
     fileSystem = new FileSystem();

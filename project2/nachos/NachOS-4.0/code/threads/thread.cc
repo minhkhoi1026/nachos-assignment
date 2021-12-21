@@ -434,3 +434,8 @@ Thread::SelfTest()
     SimpleThread(0);
 }
 
+void
+Thread::FreeSpace() {
+    if (space != 0)
+        delete space;
+}
