@@ -1,24 +1,24 @@
 
-#ifndef STABLE_H
-#define STABLE_H
+#ifndef SEM_H
+#define SEM_H
 #include "synch.h"
-#define MAX_SEMAPHORE 10
 
+#define MAX_SEM_NAME 50
 
-#endif // STABLE_H
+#endif // SEM_H
 
 // Lop Sem dung de quan ly semaphore.
 class Sem
 {
 private:
-	char name[50];		// Ten cua semaphore
+	char name[MAX_SEM_NAME];		// Ten cua semaphore
 	Semaphore* sem;		// Tao semaphore de quan ly
 public:
 	// Khoi tao doi tuong Sem. Gan gia tri ban dau la null
 	// Nho khoi tao sem su dung
-	Sem(char* na, int i)
+	Sem(char* name, int i)
 	{
-		strcpy(this->name, na);
+		strcpy(this->name, name);
 		sem = new Semaphore(this->name, i);
 	}
 
