@@ -2,7 +2,6 @@
 #ifndef SEM_H
 #define SEM_H
 #include "synch.h"
-
 #define MAX_SEM_NAME 50
 
 #endif // SEM_H
