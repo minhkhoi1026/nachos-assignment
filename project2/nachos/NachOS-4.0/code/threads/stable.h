@@ -1,6 +1,7 @@
 
 #ifndef STABLE_H
 #define STABLE_H
+
 #include "synch.h"
 #include "bitmap.h"
 #include "sem.h"

@@ -1,6 +1,6 @@
 #include "ptable.h"
 #include "openfile.h"
-
+#include "main.h"
 #define For(i,a,b) for (int i = (a); i < b; ++i)
 
 PTable::PTable(int size)

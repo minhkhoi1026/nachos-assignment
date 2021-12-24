@@ -35,7 +35,6 @@
 #include "copyright.h"
 #include "synch.h"
 #include "main.h"
-
 //----------------------------------------------------------------------
 // Semaphore::Semaphore
 // 	Initialize a semaphore, so that it can be used for synchronization.
@@ -182,6 +181,11 @@ void Lock::Acquire()
 {
     semaphore->P();
     lockHolder = kernel->currentThread;
+}
+
+bool Lock::IsHeldByCurrentThread()
+{
+    return lockHolder == kernel->currentThread;
 }
 
 //----------------------------------------------------------------------
