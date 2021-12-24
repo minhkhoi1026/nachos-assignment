@@ -9,7 +9,6 @@
 
 #include "bitmap.h"
 #include "pcb.h"
-#include "synch.h"
 
 #define MAX_PROCESS 10
 
@@ -23,7 +22,7 @@ private:
 	Semaphore* bmsem;           // dùng để ngăn chặn trường hợp nạp 2 tiến trình cùng
 
 public:
-     PTable(int = MAX_PROCESS);           // Khoi tao size doi tuong pcb
+    PTable(int = MAX_PROCESS);           // Khoi tao size doi tuong pcb
                                 // de luu size process.
                                 // Gan gia tri ban dau la null.
     ~PTable();                  // Huy cac doi tuong da tao

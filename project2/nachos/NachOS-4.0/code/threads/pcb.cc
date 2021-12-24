@@ -6,8 +6,7 @@
 #include "kernel.h"
 #include "thread.h"
 #include "addrspace.h"
-
-
+#include "main.h"
 void StartProcess(int id)
 {
     char* fileName = kernel->processTable->GetFileName(id);
