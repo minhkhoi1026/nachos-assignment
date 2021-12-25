@@ -107,7 +107,9 @@ void PCB::DecNumWait()
 	multex->V();
 }
 
-void PCB::SetFileName(char* fn){ strcpy(FileName,fn);}
+void PCB::SetFileName(char* fn) { 
+	strcpy(FileName, fn);
+}
 char* PCB::GetFileName() { return this->FileName; }
 
 int PCB::Exec(char* filename, int id)

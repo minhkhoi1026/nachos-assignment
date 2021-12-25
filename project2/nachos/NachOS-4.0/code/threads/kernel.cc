@@ -104,8 +104,8 @@ Kernel::Initialize()
     synchDisk = new SynchDisk();    //
 
     addrLock = new Semaphore("addrLock", 1);
-    gPhysPageBitMap = new Bitmap(256);
-    processTable = new PTable(10);
+    gPhysPageBitMap = new Bitmap(NumPhysPages);
+    processTable = new PTable(MAX_PROCESS);
     semTable = new STable();
     
 #ifdef FILESYS_STUB

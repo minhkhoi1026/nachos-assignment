@@ -40,13 +40,11 @@ PTable::~PTable()
 
 int PTable::ExecUpdate(char* name)
 {
-
-
-        //Gọi mutex->P(); để giúp tránh tình trạng nạp 2 tiến trình cùng 1 lúc.
+    //Gọi mutex->P(); để giúp tránh tình trạng nạp 2 tiến trình cùng 1 lúc.
 	bmsem->P();
 	
 	// Kiểm tra tính hợp lệ của chương trình “name”.
-        // Kiểm tra sự tồn tại của chương trình “name” bằng cách gọi phương thức Open của lớp fileSystem.
+    // Kiểm tra sự tồn tại của chương trình “name” bằng cách gọi phương thức Open của lớp fileSystem.
 	if(name == NULL)
 	{
 		printf("\nPTable::Exec : Can't not execute name is NULL.\n");
@@ -77,7 +75,7 @@ int PTable::ExecUpdate(char* name)
 	pcb[index]->SetFileName(name);
 
 	// parrentID là processID của currentThread
-    	pcb[index]->parentID = kernel->currentThread->processID;
+    pcb[index]->parentID = kernel->currentThread->processID;
 
 	
 	// Gọi thực thi phương thức Exec của lớp PCB.
@@ -122,6 +120,8 @@ int PTable::JoinUpdate(int id)
     // Successfully
 	return ec;
 }
+
+
 int PTable::ExitUpdate(int exitcode)
 {              
     // Nếu tiến trình gọi là main process thì gọi Halt().
@@ -139,10 +139,6 @@ int PTable::ExitUpdate(int exitcode)
 		return -1;
 	}
 
-	
-
-
-	
 	// Ngược lại gọi SetExitCode để đặt exitcode cho tiến trình gọi.
 	pcb[id]->SetExitCode(exitcode);
 	pcb[pcb[id]->parentID]->DecNumWait();

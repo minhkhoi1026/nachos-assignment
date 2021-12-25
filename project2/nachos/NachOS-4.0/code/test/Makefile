@@ -112,14 +112,34 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readnum printnum readstring printstring iostring help randnum ascii readprintchar create_file
+PROGRAMS = add halt shell matmult sort segments readnum printnum \
+ 		readstring printstring iostring help randnum ascii \
+		readprintchar create_file pingpong
 endif
 
 all: $(PROGRAMS)
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
-	
+
+pingpong.o: pingpong.c
+	$(CC) $(CFLAGS) -c pingpong.c
+pingpong: pingpong.o pingpong.o ping pong
+	$(LD) $(LDFLAGS) start.o pingpong.o -o pingpong.coff
+	$(COFF2NOFF) pingpong.coff pingpong
+
+ping.o: ping.c
+	$(CC) $(CFLAGS) -c ping.c
+ping: ping.o ping.o
+	$(LD) $(LDFLAGS) start.o ping.o -o ping.coff
+	$(COFF2NOFF) ping.coff ping
+
+pong.o: pong.c
+	$(CC) $(CFLAGS) -c pong.c
+pong: pong.o pong.o
+	$(LD) $(LDFLAGS) start.o pong.o -o pong.coff
+	$(COFF2NOFF) pong.coff pong
+
 create_file.o: create_file.c
 	$(CC) $(CFLAGS) -c create_file.c
 create_file: create_file.o create_file.o

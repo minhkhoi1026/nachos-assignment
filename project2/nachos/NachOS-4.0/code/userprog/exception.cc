@@ -108,6 +108,34 @@ ExceptionHandler(ExceptionType which)
 			break;
 		case SyscallException:
 			switch(type) {
+				case SC_Exec:
+				{
+					int bufferUser = kernel->machine->ReadRegister(4);
+
+					SpaceId pid = SysExec(bufferUser);
+
+					kernel->machine->WriteRegister(2, pid);
+					IncreasePC();
+					return;
+				}
+				case SC_Join:
+				{       
+					int pid = kernel->machine->ReadRegister(4);
+					
+					int res = SysJoin(pid);
+					
+					kernel-> machine->WriteRegister(2, res);
+					IncreasePC();
+					return;
+				}
+				case SC_Exit:
+				{
+					int exitStatus = kernel->machine->ReadRegister(4);
+
+					int res = SysExit(exitStatus);
+					IncreasePC();
+					return; 
+				}
 				case SC_CreateFile:{
 					int bufferUser = kernel->machine->ReadRegister(4);
 
@@ -136,7 +164,6 @@ ExceptionHandler(ExceptionType which)
 					ASSERTNOTREACHED();
 					break;
 				}
-				
 				case SC_PrintNum: {
 					DEBUG(dbgSys, "My result of WriteNum is ");
 					int tmp = kernel->machine->ReadRegister(4);

@@ -66,6 +66,48 @@ char* User2System(int virtAddr,int limit)
   return kernelBuf;
 }
 
+int SysExit(int exitStatus) {
+  if(exitStatus != 0) {
+    return exitStatus;
+  }			
+  
+  int res = kernel->processTable->ExitUpdate(exitStatus);
+
+  kernel->currentThread->FreeSpace();
+  kernel->currentThread->Finish();
+  return res;
+}
+
+/************* system call for execute file *****************/
+int SysJoin(int pid) {
+  return kernel->processTable->JoinUpdate(pid);
+}
+
+/************* system call for execute file *****************/
+SpaceId SysExec(int bufferUser) {
+  char* name;
+  name = User2System(bufferUser, MAX_FILENAME_LENGTH + 1); // Lay ten chuong trinh, nap vao kernel
+
+  if (!name)
+  {
+    DEBUG(dbgSys, "\n Not enough memory in System");
+    return -1;
+  }
+  OpenFile *oFile = kernel->fileSystem->Open(name);
+  if (!oFile)
+  {
+    DEBUG(dbgSys, "\nExec:: Can't open this file.");
+    return -1;
+  }
+  delete oFile;
+
+  // Return child process id
+  int pid = kernel->processTable->ExecUpdate(name); 
+  
+  delete[] name;	
+  return pid;
+}
+
 /************* system call for create file *****************/
 int SysCreateFile(int bufferUser) {
   // read filename from user space
