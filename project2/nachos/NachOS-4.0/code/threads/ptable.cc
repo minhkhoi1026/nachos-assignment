@@ -93,7 +93,7 @@ int PTable::JoinUpdate(int id)
 	// có processID là id hay không. Nếu không thỏa, ta báo lỗi hợp lý và trả về -1.
 	if(id < 0)
 	{
-		printf("\nPTable::JoinUpdate : id = %d", id);
+		printf("\nPTable::JoinUpdate : Can't join in process which id = %d", id);
 		return -1;
 	}
 	// Check if process running is parent process of process which joins

@@ -100,7 +100,8 @@ SpaceId SysExec(int bufferUser) {
     return -1;
   }
   delete oFile;
-
+  
+  DEBUG(dbgThread, name);
   // Return child process id
   int pid = kernel->processTable->ExecUpdate(name); 
   

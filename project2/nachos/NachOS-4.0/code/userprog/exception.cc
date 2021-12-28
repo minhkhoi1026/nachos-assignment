@@ -111,7 +111,6 @@ ExceptionHandler(ExceptionType which)
 				case SC_Exec:
 				{
 					int bufferUser = kernel->machine->ReadRegister(4);
-
 					SpaceId pid = SysExec(bufferUser);
 
 					kernel->machine->WriteRegister(2, pid);
@@ -121,7 +120,7 @@ ExceptionHandler(ExceptionType which)
 				case SC_Join:
 				{       
 					int pid = kernel->machine->ReadRegister(4);
-					
+				
 					int res = SysJoin(pid);
 					
 					kernel-> machine->WriteRegister(2, res);
