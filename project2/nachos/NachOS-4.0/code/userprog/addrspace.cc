@@ -108,10 +108,19 @@ AddrSpace::AddrSpace(char* filename) {
   
  	kernel->addrLock->P();
 
-	// how big is address space?
+     
+#ifdef RDATA
+// how big is address space?
+    size = noffH.code.size + noffH.readonlyData.size + noffH.initData.size +
+           noffH.uninitData.size + UserStackSize;	
+                                                // we need to increase the size
+						// to leave room for the stack
+#else
+// how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size 
 			+ UserStackSize;	// we need to increase the size
 						// to leave room for the stack
+#endif
 
     // Number page process need
     numPages = divRoundUp(size, PageSize);
@@ -151,18 +160,22 @@ AddrSpace::AddrSpace(char* filename) {
     // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
     {
-	for(i = 0; i < numPages ; i++)
-	        executable->ReadAt(&(kernel->machine->mainMemory[noffH.code.virtualAddr]) + (pageTable[i].physicalPage*PageSize),PageSize,noffH.code.inFileAddr + (i*PageSize));
+        for(i = 0; i < numPages ; i++)
+            executable->ReadAt(&(kernel->machine->mainMemory[noffH.code.virtualAddr]) + (pageTable[i].physicalPage*PageSize), PageSize,noffH.code.inFileAddr + (i*PageSize));
     }
 
     if (noffH.initData.size > 0)
     {
-	for(i = 0 ; i < numPages ; i++)
-	        executable->ReadAt(&(kernel->machine->mainMemory[noffH.initData.virtualAddr]) + (pageTable[i].physicalPage*PageSize),PageSize, noffH.initData.inFileAddr+(i*PageSize));
+        for(i = 0 ; i < numPages ; i++)
+            executable->ReadAt(&(kernel->machine->mainMemory[noffH.initData.virtualAddr]) + (pageTable[i].physicalPage*PageSize), PageSize, noffH.initData.inFileAddr+(i*PageSize));
     }	
-
+#ifdef RDATA
+    if (noffH.readonlyData.size > 0) 
+    {
+            executable->ReadAt(&(kernel->machine->mainMemory[noffH.readonlyData.virtualAddr]) + (pageTable[i].physicalPage*PageSize), PageSize, noffH.readonlyData.inFileAddr+(i*PageSize));
+    }
+#endif
    delete executable;
-
 }
 
 //----------------------------------------------------------------------
@@ -216,6 +229,7 @@ AddrSpace::Load(char *fileName)
 			+ UserStackSize;	// we need to increase the size
 						// to leave room for the stack
 #endif
+
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
@@ -246,7 +260,7 @@ AddrSpace::Load(char *fileName)
 #ifdef RDATA
     if (noffH.readonlyData.size > 0) {
         DEBUG(dbgAddr, "Initializing read only data segment.");
-	DEBUG(dbgAddr, noffH.readonlyData.virtualAddr << ", " << noffH.readonlyData.size);
+	    DEBUG(dbgAddr, noffH.readonlyData.virtualAddr << ", " << noffH.readonlyData.size);
         executable->ReadAt(
 		&(kernel->machine->mainMemory[noffH.readonlyData.virtualAddr]),
 			noffH.readonlyData.size, noffH.readonlyData.inFileAddr);
