@@ -3,8 +3,12 @@
 int main()
 {
 	int i;
-	for(i = 0 ; i < 10; i++)
+	for(i = 0 ; i < 1000; i++)
 	{
+		Wait("pong");
+		Wait("print");
 		PrintChar('B');
+		Signal("print");
+		Signal("ping");
 	}
 }

@@ -254,13 +254,59 @@ ExceptionHandler(ExceptionType which)
 					ASSERTNOTREACHED();
 					break;
 
-				default:
-					DEBUG(dbgSys, " Create file result: ");
-					cerr << "Unexpected system call " << type << "\n";
+				case SC_CreateSemaphore: {
+					int virtAddr = kernel->machine->ReadRegister(4);
+					int semval = kernel->machine->ReadRegister(5);
+
+    				char *name = User2System(virtAddr, MAX_FILENAME_LENGTH + 1);
+					int res = SysCreateSem(name,semval);
+
+					kernel->machine->WriteRegister(2, res);
+
+      				delete[] name;
+
+					IncreasePC();
+
+					return;
+
+					ASSERTNOTREACHED();
 					break;
+				}
+
+				case SC_Wait: {
+					int virtAddr = kernel->machine->ReadRegister(4);
+
+					char *name = User2System(virtAddr, MAX_FILENAME_LENGTH + 1);
+					int res = SysWait(name);
+					delete[] name;
+					kernel->machine->WriteRegister(2, res);
+					IncreasePC();
+					return;
+					
+					ASSERTNOTREACHED();
+					break;
+				}
+
+				case SC_Signal:	{
+					int virtAddr = kernel->machine->ReadRegister(4);
+
+					char *name = User2System(virtAddr, MAX_FILENAME_LENGTH + 1);
+					int res = SysSignal(name);
+					delete[] name;
+					kernel->machine->WriteRegister(2, res);
+					IncreasePC();
+					return;
+					
+					ASSERTNOTREACHED();
+					break;
+				}
+
+				default:
+						DEBUG(dbgSys, " Create file result: ");
+						cerr << "Unexpected system call " << type << "\n";
+						break;
 			}
 			break;
-		
 		default:
 			cerr << "Unexpected user mode exception" << (int)which << "\n";
 			break;

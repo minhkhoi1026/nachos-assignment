@@ -299,4 +299,59 @@ int SysAdd(int op1, int op2)
   return op1 + op2;
 }
 
+int SysCreateSem(char* name, int semval){
+  if(name == NULL)
+  {
+    DEBUG(dbgSys, "\n Not enough memory in System");
+    return -1;
+  }
+  try{
+    int res = kernel->semTable->Create(name, semval);
+  }
+  catch(const char* msg)
+  {
+    DEBUG(dbgSys, "\n Khong the khoi tao semaphore");
+    DEBUG(dbgSys, msg <<'\n');
+
+    return -1;				
+  }
+  return 0;
+}
+
+int SysWait(char* name){
+  if(name == NULL)
+  {
+    DEBUG(dbgSys, "\n Not enough memory in System");
+    return -1;
+  }
+  try{
+    int res = kernel->semTable->Wait(name);
+  }
+  catch(const char* msg)
+  {
+    DEBUG(dbgSys, "\n Khong ton tai semaphore nay");
+    DEBUG(dbgSys, msg << '\n');
+    return -1;				
+  }
+  return 0;
+}
+
+int SysSignal(char* name){
+  if(name == NULL)
+  {
+    DEBUG(dbgSys, "\n Not enough memory in System");
+    return -1;
+  }
+  try{
+    int res = kernel->semTable->Signal(name);
+  }
+  catch(const char* msg)
+  {
+    DEBUG(dbgSys, "\n Khong ton tai ten semaphore nay!");
+    DEBUG(dbgSys, msg << '\n');
+    return -1;				
+  }
+  return 0;
+}
+
 #endif /* ! __USERPROG_KSYSCALL_H__ */

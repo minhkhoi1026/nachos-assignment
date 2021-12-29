@@ -14,6 +14,9 @@ void main()
 	PrintString("Ping-Pong test starting...\n\n");
 	pongPID = Exec("./test/pong");
 	pingPID = Exec("./test/ping");
+	CreateSemaphore("print",1);
+	CreateSemaphore("ping",1);
+	CreateSemaphore("pong",1);
 	Join(pingPID);
 	Join(pongPID);
 }

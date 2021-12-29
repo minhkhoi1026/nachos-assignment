@@ -23,18 +23,20 @@
 #define SC_Exec		2
 #define SC_Join		3
 #define SC_CreateFile	4
-#define SC_Remove       5
+#define SC_Remove   5
 #define SC_Open		6
 #define SC_Read		7
 #define SC_Write	8
-#define SC_Seek         9
+#define SC_Seek     9
 #define SC_Close	10
+//Syscall cho multithreading
 #define SC_ThreadFork	11
 #define SC_ThreadYield	12
 #define SC_ExecV	13
 #define SC_ThreadExit   14
 #define SC_ThreadJoin   15
 
+//Syscall co ban
 #define SC_Add		42
 #define SC_ReadNum 43
 #define SC_PrintNum 44
@@ -43,6 +45,11 @@
 #define SC_PrintChar 47
 #define SC_ReadString 48
 #define SC_PrintString 49
+
+// Syscall Semaphore
+#define SC_CreateSemaphore	18
+#define SC_Wait			19
+#define SC_Signal		20
 
 #ifndef IN_ASM
 
@@ -192,6 +199,15 @@ int ThreadJoin(ThreadId id);
  * Deletes current thread and returns ExitCode to every waiting lokal thread.
  */
 void ThreadExit(int ExitCode);	
+
+// Ham cho semaphore
+// Success: 0 - Failed: -1
+// Ham tao 1 semaphore voi ten semaphore
+int CreateSemaphore(char* name, int semval);
+
+int Wait(char* name);
+
+int Signal(char* name);
 
 #endif /* IN_ASM */
 
