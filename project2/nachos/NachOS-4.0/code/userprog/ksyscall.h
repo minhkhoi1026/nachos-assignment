@@ -122,7 +122,7 @@ int SysCreateFile(int bufferUser) {
   DEBUG(dbgSys, "Creating " << filename);
 
   // create file with filename, then deallocate filename buffer, advoid memory leak
-  int res = kernel->fileSystem->Create(filename, 0);
+  int res = kernel->fileSystem->Create(filename);
   delete filename;
   
   return (res == 1) ? 0 : -1;

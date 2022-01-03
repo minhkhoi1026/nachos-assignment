@@ -217,10 +217,13 @@ OpenFile::GetCurrentPos()
 
 #else //FILESYS_STUB
 
-OpenFile::Openfile(int f){
+#include "openfile.h"
+
+OpenFile::OpenFile(int f){
     file = f; currentOffset = 0; type = 0; 
 }
-OpenFile::Openfile(int f, int t) {
+
+OpenFile::OpenFile(int f, int t) {
     file = f; currentOffset = 0; type = t;
 }	// mo file voi tham so type
 

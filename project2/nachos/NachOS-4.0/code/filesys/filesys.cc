@@ -337,4 +337,32 @@ FileSystem::Print()
     delete directory;
 } 
 
+#else //FILESYS_STUB
+
+#include "filesys.h"
+
+FileSystem::FileSystem() {}
+
+bool 
+FileSystem::Create(char *name) {
+    int fileDescriptor = OpenForWrite(name);
+
+    if (fileDescriptor == -1) return FALSE;
+    Close(fileDescriptor); 
+    return TRUE; 
+}
+
+OpenFile*
+FileSystem::Open(char *name) {
+    int fileDescriptor = OpenForReadWrite(name, FALSE);
+
+    if (fileDescriptor == -1) return NULL;
+    return new OpenFile(fileDescriptor);
+}
+
+bool 
+FileSystem::Remove(char *name) {
+    return Unlink(name) == 0; 
+}
+
 #endif // FILESYS_STUB

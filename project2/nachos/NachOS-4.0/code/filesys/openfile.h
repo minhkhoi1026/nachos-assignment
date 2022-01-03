@@ -29,9 +29,12 @@
 					// See definitions listed under #else
 class OpenFile {
   public:
-    OpenFile(int f);	// open the file
-    ~OpenFile();	// close the file
+	int type;
 
+    OpenFile(int f);	// open the file
+    OpenFile(int f,int t);	// open the file
+    ~OpenFile();	// close the file
+	int Seek(int pos); 
     int ReadAt(char *into, int numBytes, int position);
     int WriteAt(char *from, int numBytes, int position);
     int Read(char *into, int numBytes);
