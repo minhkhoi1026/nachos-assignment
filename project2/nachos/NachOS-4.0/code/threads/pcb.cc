@@ -16,14 +16,9 @@ void StartProcess(int id)
 		printf("\nPCB::Exec : Can't create AddSpace.");
 		return;
 	}
+	
+    space->Execute();	
 
-    kernel->currentThread->space = space;
-
-    space->InitRegisters();		
-    space->RestoreState();		
-
-    kernel->machine->Run();		
-    ASSERT(FALSE);		
 }
 
 PCB::PCB(int id)
