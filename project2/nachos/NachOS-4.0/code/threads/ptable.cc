@@ -58,7 +58,6 @@ int PTable::ExecUpdate(char* name)
 		bmsem->V();
 		return -1;
 	}
-
 	// Tìm slot trống trong bảng Ptable.
 	int index = this->GetFreeSlot();
 

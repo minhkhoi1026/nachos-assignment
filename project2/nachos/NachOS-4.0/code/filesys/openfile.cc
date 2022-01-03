@@ -10,7 +10,7 @@
 // Copyright (c) 1992-1993 The Regents of the University of California.
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
-#ifndef FILESYS_STUB
+#ifndef FILESYS_STUB //FILESYS
 
 #include "copyright.h"
 #include "main.h"
@@ -31,8 +31,16 @@ OpenFile::OpenFile(int sector)
     hdr = new FileHeader;
     hdr->FetchFrom(sector);
     seekPosition = 0;
+    type = 0;
 }
 
+OpenFile::OpenFile(int sector, int _type)
+{
+	hdr = new FileHeader;
+	hdr->FetchFrom(sector);
+	seekPosition = 0;
+	type = _type;
+}
 //----------------------------------------------------------------------
 // OpenFile::~OpenFile
 // 	Close a Nachos file, de-allocating any in-memory data structures.
@@ -72,18 +80,26 @@ OpenFile::Seek(int position)
 
 int
 OpenFile::Read(char *into, int numBytes)
-{
-   int result = ReadAt(into, numBytes, seekPosition);
-   seekPosition += result;
-   return result;
+{   
+    if (type == 0 || type == 1){
+        int result = ReadAt(into, numBytes, seekPosition);
+        seekPosition += result;
+        return result;
+    } else {
+        return 0;
+    }
 }
 
 int
 OpenFile::Write(char *into, int numBytes)
 {
-   int result = WriteAt(into, numBytes, seekPosition);
-   seekPosition += result;
-   return result;
+   if (type == 0){
+        int result = WriteAt(into, numBytes, seekPosition);
+        seekPosition += result;
+        return result;
+   } else {
+       return 0;
+   }
 }
 
 //----------------------------------------------------------------------
@@ -192,5 +208,79 @@ OpenFile::Length()
 { 
     return hdr->FileLength(); 
 }
+
+int
+OpenFile::GetCurrentPos()
+{
+    return seekPosition;
+}
+
+#else //FILESYS_STUB
+
+OpenFile::Openfile(int f){
+    file = f; currentOffset = 0; type = 0; 
+}
+OpenFile::Openfile(int f, int t) {
+    file = f; currentOffset = 0; type = t;
+}	// mo file voi tham so type
+
+OpenFile::~OpenFile() {
+    Close(file);
+}
+
+int
+OpenFile::Seek(int pos) {
+    Lseek(file, pos, 0);
+    currentOffset = Tell(file);
+    return currentOffset;
+}
+
+int 
+OpenFile::ReadAt(char *into, int numBytes, int position) { 
+    Lseek(file, position, 0); 
+    return ReadPartial(file, into, numBytes); 
+}    
+
+int 
+OpenFile::WriteAt(char *from, int numBytes, int position) { 
+    Lseek(file, position, 0); 
+    WriteFile(file, from, numBytes); 
+    return numBytes;
+}	
+
+int 
+OpenFile::Read(char *into, int numBytes) {
+    int numRead = ReadAt(into, numBytes, currentOffset); 
+    currentOffset += numRead;
+    return numRead;
+}
+
+int 
+OpenFile::Write(char *from, int numBytes) {
+    int numWritten = WriteAt(from, numBytes, currentOffset); 
+    currentOffset += numWritten;
+    return numWritten;
+}
+
+//Default Length method
+/*
+int Length() { Lseek(file, 0, 2); return Tell(file); }
+*/
+
+int 
+OpenFile::Length() {
+    int len;
+    Lseek(file, 0, 2);
+    len = Tell(file);
+    Lseek(file, currentOffset, 0);
+    return len;
+}
+
+int 
+OpenFile::GetCurrentPos() {
+    currentOffset = Tell(file);
+    return currentOffset;
+}
+	
 
 #endif //FILESYS_STUB
