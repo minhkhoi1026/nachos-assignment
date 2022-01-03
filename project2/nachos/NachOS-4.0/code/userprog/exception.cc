@@ -130,8 +130,8 @@ ExceptionHandler(ExceptionType which)
 				case SC_Exit:
 				{
 					int exitStatus = kernel->machine->ReadRegister(4);
-
 					int res = SysExit(exitStatus);
+					kernel->machine->WriteRegister(2, res);
 					IncreasePC();
 					return; 
 				}
