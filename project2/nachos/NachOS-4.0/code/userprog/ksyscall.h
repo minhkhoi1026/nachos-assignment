@@ -306,7 +306,7 @@ int SysCreateSem(char* name, int semval){
     return -1;
   }
   try{
-    int res = kernel->semTable->Create(name, semval);
+    kernel->semTable->Create(name, semval);
   }
   catch(const char* msg)
   {
@@ -325,7 +325,7 @@ int SysWait(char* name){
     return -1;
   }
   try{
-    int res = kernel->semTable->Wait(name);
+    kernel->semTable->Wait(name);
   }
   catch(const char* msg)
   {
@@ -343,7 +343,7 @@ int SysSignal(char* name){
     return -1;
   }
   try{
-    int res = kernel->semTable->Signal(name);
+    kernel->semTable->Signal(name);
   }
   catch(const char* msg)
   {
