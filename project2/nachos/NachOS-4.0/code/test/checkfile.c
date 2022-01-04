@@ -13,5 +13,6 @@ int main()
 	id_file = Open("mydata.txt", 0);
 
 	Read(data, 2, id_file);
+	PrintString(data);
 	Close(id_file);
 }

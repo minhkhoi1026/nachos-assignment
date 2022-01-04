@@ -8,7 +8,8 @@ FileTable::FileTable() {
 	{
 		core[i] = NULL;
 	}
-    core[0] = new OpenFile(fileDescriptor, type);
+    core[0]= new OpenFile(0);
+    core[1]= new OpenFile(0,1);
 }
 
 int FileTable::FindFreeSlot()
