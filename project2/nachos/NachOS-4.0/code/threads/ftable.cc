@@ -4,10 +4,11 @@
 #include "main.h"
 
 FileTable::FileTable() {
-	for (int i = 0; i < N_FILE; ++i)
+	for (int i = 2; i < N_FILE; ++i)
 	{
 		core[i] = NULL;
 	}
+    core[0] = new OpenFile(fileDescriptor, type);
 }
 
 int FileTable::FindFreeSlot()

@@ -140,17 +140,17 @@ int PCB::Exec(char* filename, int id)
 
 
 OpenFileID PCB::OpenFile(char* name, int type){
-	this->ftable->Open(name,type);
+	return this->ftable->Open(name,type);
 }
 
 int PCB::CloseFile(OpenFileID fid){
-	this->ftable->Close(fid);
+	return this->ftable->Close(fid);
 }
 
 int PCB::ReadFile(char *buffer, int charcount, OpenFileID id){
-	this->ftable->Read(buffer,charcount,id);
+	return this->ftable->Read(buffer,charcount,id);
 }
 
 int PCB::WriteFile(char *buffer, int charcount, OpenFileID id){
-	this->ftable->Write(buffer,charcount,id);
+	return this->ftable->Write(buffer,charcount,id);
 }

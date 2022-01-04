@@ -181,17 +181,17 @@ char* PTable::GetFileName(int id)
 
 
 OpenFileID PTable::OpenFile(int pid, char* name, int type) {
-	this->pcb[pid]->OpenFile(name,type);
+	return this->pcb[pid]->OpenFile(name,type);
 }
 
 int PTable::CloseFile(int pid, OpenFileID fid) {
-	this->pcb[pid]->CloseFile(fid);
+	return this->pcb[pid]->CloseFile(fid);
 }
 
 int PTable::ReadFile(int pid, char *buffer, int charcount, OpenFileID fid) {
-	this->pcb[pid]->ReadFile(buffer,charcount,fid); 
+	return this->pcb[pid]->ReadFile(buffer,charcount,fid); 
 }
 
 int PTable::WriteFile(int pid, char *buffer, int charcount, OpenFileID fid) {
-	this->pcb[pid]->WriteFile(buffer,charcount,fid);
+	return this->pcb[pid]->WriteFile(buffer,charcount,fid);
 }
