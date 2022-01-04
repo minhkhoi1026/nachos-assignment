@@ -138,15 +138,97 @@ ExceptionHandler(ExceptionType which)
 				case SC_CreateFile:{
 					int bufferUser = kernel->machine->ReadRegister(4);
 
-					int result = SysCreateFile(bufferUser);
-					if (result == 0) {
+  					char* filename = User2System(bufferUser, MAX_FILENAME_LENGTH);
+					int res = SysCreateFile(filename);
+					delete[] filename;
+					if (res == 0) {
 						DEBUG(dbgSys, "\nCreate file successful");
 					}
 					else {
 						DEBUG(dbgSys, "\nError when create file!");
 					}
 
-					kernel->machine->WriteRegister(2, (int)result);
+					kernel->machine->WriteRegister(2, (int)res);
+					
+					IncreasePC();
+					return;
+					ASSERTNOTREACHED();
+					break;
+				}
+				case SC_Open:{
+					int bufferUser = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so name tu thanh ghi so 4
+					int type = kernel->machine->ReadRegister(5); // Lay tham so type tu thanh ghi so 5
+					char* filename;
+					filename = User2System(bufferUser, MAX_FILENAME_LENGTH); // Copy chuoi tu vung nho User Space sang System Space voi bo dem name dai MaxFileLength
+					int res = SysOpen(filename, type);
+					delete[] filename;
+					if (res != -1) {
+						DEBUG(dbgSys, "\nOpen file successful");
+					}
+					else {
+						DEBUG(dbgSys, "\nError when open file!");
+					}
+					kernel->machine->WriteRegister(2, (int)res);
+					IncreasePC();
+					return;
+					ASSERTNOTREACHED();
+					break;
+				}				
+				case SC_Close:{
+					OpenFileID id = kernel->machine->ReadRegister(4);
+
+					int res = SysClose(id);
+					if (res == 0) {
+						DEBUG(dbgSys, "\nClose file successful");
+					}
+					else {
+						DEBUG(dbgSys, "\nError when close file!");
+					}
+
+					kernel->machine->WriteRegister(2, (int)res);
+					
+					IncreasePC();
+					return;
+					ASSERTNOTREACHED();
+					break;
+				}
+				case SC_Read:{
+					int bufferUser = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so buffer tu thanh ghi so 4
+					int charcount = kernel->machine->ReadRegister(5); // Lay charcount tu thanh ghi so 5
+					int id = kernel->machine->ReadRegister(6); // Lay id cua file tu thanh ghi so 6 
+					char* buffer = User2System(bufferUser,charcount);
+					int res = SysRead(buffer,charcount,id);
+					delete[] buffer;
+					if (res == 0) {
+						DEBUG(dbgSys, "\nRead file successful");
+					}
+					else {
+						DEBUG(dbgSys, "\nError when read file!");
+					}
+
+					kernel->machine->WriteRegister(2, (int)res);
+					
+					IncreasePC();
+					return;
+					ASSERTNOTREACHED();
+					break;
+				}
+
+				case SC_Write:{
+					int bufferUser = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so buffer tu thanh ghi so 4
+					int charcount = kernel->machine->ReadRegister(5); // Lay charcount tu thanh ghi so 5
+					int id = kernel->machine->ReadRegister(6); // Lay id cua file tu thanh ghi so 6 
+					char* buffer = User2System(bufferUser,charcount);
+					int res = SysWrite(buffer,charcount,id);
+					delete[] buffer;
+					if (res == 0) {
+						DEBUG(dbgSys, "\nCreate file successful");
+					}
+					else {
+						DEBUG(dbgSys, "\nError when create file!");
+					}
+
+					kernel->machine->WriteRegister(2, (int)res);
 					
 					IncreasePC();
 					return;
@@ -154,9 +236,9 @@ ExceptionHandler(ExceptionType which)
 					break;
 				}
 				case SC_ReadNum: {
-					int result = SysReadNum();
-					DEBUG(dbgSys, "My result of ReadNum is " << result);
-					kernel->machine->WriteRegister(2, (int)result);
+					int res = SysReadNum();
+					DEBUG(dbgSys, "My result of ReadNum is " << res);
+					kernel->machine->WriteRegister(2, (int)res);
 					IncreasePC();
 					return;
 
@@ -174,10 +256,10 @@ ExceptionHandler(ExceptionType which)
 					break;
 				}
 				case SC_RandomNum: {
-					int result = SysRandomNum();
-					kernel->machine->WriteRegister(2, result);
+					int res = SysRandomNum();
+					kernel->machine->WriteRegister(2, res);
 
-					DEBUG(dbgSys, "Random number is " << result);
+					DEBUG(dbgSys, "Random number is " << res);
 					IncreasePC();
 					return;
 
@@ -186,18 +268,18 @@ ExceptionHandler(ExceptionType which)
 				}
 
 				case SC_ReadChar: {
-					int result = SysReadChar();
-					kernel->machine->WriteRegister(2, (int)result);
-					DEBUG(dbgSys, "Read char " << (int)result << '\n');
+					int res = SysReadChar();
+					kernel->machine->WriteRegister(2, (int)res);
+					DEBUG(dbgSys, "Read char " << (int)res << '\n');
 					IncreasePC();
 					return;
 					ASSERTNOTREACHED();
 					break;
 				}
 				case SC_PrintChar: {
-					int result = kernel->machine->ReadRegister(4);
-					DEBUG(dbgSys, "Print char " << (int)result << '\n');
-					SysPrintChar((char)result);
+					int res = kernel->machine->ReadRegister(4);
+					DEBUG(dbgSys, "Print char " << (int)res << '\n');
+					SysPrintChar((char)res);
 					IncreasePC();
 					return;
 					ASSERTNOTREACHED();
@@ -239,13 +321,13 @@ ExceptionHandler(ExceptionType which)
 					DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
 					
 					/* Process SysAdd Systemcall*/
-					int result;
-					result = SysAdd(/* int op1 */(int)kernel->machine->ReadRegister(4),
+					int res;
+					res = SysAdd(/* int op1 */(int)kernel->machine->ReadRegister(4),
 							/* int op2 */(int)kernel->machine->ReadRegister(5));
 
-					DEBUG(dbgSys, "Add returning with " << result << "\n");
+					DEBUG(dbgSys, "Add returning with " << res << "\n");
 					/* Prepare Result */
-					kernel->machine->WriteRegister(2, (int)result);
+					kernel->machine->WriteRegister(2, (int)res);
 					
 					IncreasePC();
 

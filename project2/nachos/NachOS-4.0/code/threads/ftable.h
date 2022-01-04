@@ -2,6 +2,8 @@
 #define FTABLE_H
 #define N_FILE 10
 #define OpenFileID int
+#define STDIN 0
+#define STDOUT 1
 #include "openfile.h"
 
 class FileTable {

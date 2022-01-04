@@ -17,7 +17,7 @@ class PTable
 private:
 	int psize;
 	Bitmap *bm;                 // đánh dấu các vị trí đã được sử dụng trong pcb
-	PCB* pcb[MAX_PROCESS];
+	PCB* pcb[MAX_PROCESS];      // quan ly cac tien trinh dang chay
 
 	Semaphore* bmsem;           // dùng để ngăn chặn trường hợp nạp 2 tiến trình cùng
 
@@ -37,6 +37,11 @@ public:
     void Remove(int pid);       // khi tiến trình kết thúc, delete processID ra khỏi mảng quản lý nó
 
     char* GetFileName(int id);  // Trả về tên của tiến trình
+
+    OpenFileID OpenFile(int pid, char* name, int type);
+    int CloseFile(int pid, OpenFileID fid);
+    int ReadFile(int pid, char *buffer, int charcount, OpenFileID id);
+    int WriteFile(int pid, char *buffer, int charcount, OpenFileID id);
 };
 #endif // PTABLE_H
 

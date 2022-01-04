@@ -110,9 +110,8 @@ SpaceId SysExec(int bufferUser) {
 }
 
 /************* system call for create file *****************/
-int SysCreateFile(int bufferUser) {
+int SysCreateFile(char* filename) {
   // read filename from user space
-  char* filename = User2System(bufferUser, MAX_FILENAME_LENGTH);
 
   // if kernel buffer's memory is not allocated then halt system
   if (!filename) {
@@ -123,9 +122,54 @@ int SysCreateFile(int bufferUser) {
 
   // create file with filename, then deallocate filename buffer, advoid memory leak
   int res = kernel->fileSystem->Create(filename);
-  delete filename;
-  
   return (res == 1) ? 0 : -1;
+}
+
+/************* system call for open file *****************/
+int SysOpen(char* filename, int type) {
+  // read filename from user space
+  // if kernel buffer's memory is not allocated then halt system
+  if (!filename) {
+    DEBUG(dbgSys, "Cannot allocate kernel buffer for name string!");
+    return -1;
+  }
+  DEBUG(dbgSys, "Opening " << filename);  
+  if (type == 0 || type == 1) //chi xu li khi type = 0 hoac 1
+  {
+    int pid = kernel->currentThread->processID;
+    return kernel->processTable->OpenFile(pid,filename,type);
+  }
+  else if (type == 2) {  // xu li stdin
+    return STDIN;
+  }
+  else if (type == 3) {  // xu li stdout
+    return STDOUT;
+  }
+  else {
+    DEBUG(dbgSys, "Input Type Error: " << type);
+    return -1;
+  }
+}
+
+/************* system call for close file *****************/
+int SysClose(OpenFileID fid) {
+  DEBUG(dbgSys, "Closing file with id: " << fid);
+  int pid = kernel->currentThread->processID;
+  return kernel->processTable->CloseFile(pid, fid);
+}
+
+/************* system call for read file *****************/
+int SysRead(char *buffer, int charcount, OpenFileID fid) {
+  DEBUG(dbgSys, "Read file with id: " << fid);
+  int pid = kernel->currentThread->processID;
+  return kernel->processTable->ReadFile(pid, buffer, charcount, fid);
+}
+
+/************* system call for write file *****************/
+int SysWrite(char *buffer, int charcount, OpenFileID fid) {
+  DEBUG(dbgSys, "Closing file with id: " << fid);
+  int pid = kernel->currentThread->processID;
+  return kernel->processTable->WriteFile(pid, buffer, charcount, fid);
 }
 
 /************* system call for read number *****************/
@@ -288,17 +332,20 @@ void SysPrintString(int bufferUser) {
   }
 }
 
+/************* system call for halt os *****************/
 void SysHalt()
 {
   kernel->interrupt->Halt();
 }
 
 
+/************* system call for add two number *****************/
 int SysAdd(int op1, int op2)
 {
   return op1 + op2;
 }
 
+/************* system call for create semaphore *****************/
 int SysCreateSem(char* name, int semval){
   if(name == NULL)
   {
@@ -318,6 +365,7 @@ int SysCreateSem(char* name, int semval){
   return 0;
 }
 
+/************* system call for wait a semaphore *****************/
 int SysWait(char* name){
   if(name == NULL)
   {
@@ -336,6 +384,8 @@ int SysWait(char* name){
   return 0;
 }
 
+
+/************* system call for signal a semaphore *****************/
 int SysSignal(char* name){
   if(name == NULL)
   {

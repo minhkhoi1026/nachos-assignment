@@ -42,14 +42,8 @@ __start:
  * -------------------------------------------------------------
  */
 
-	.globl CreateFile
-	.ent	CreateFile
-CreateFile:
-	addiu $2,$0,SC_CreateFile
-	syscall
-	j 	$31
-	.end CreateFile
 
+	
 	.globl ReadNum
 	.ent	ReadNum
 ReadNum:
@@ -162,6 +156,14 @@ Remove:
 	j	$31
 	.end Remove
 
+	.globl CreateFile
+	.ent	CreateFile
+CreateFile:
+	addiu $2,$0,SC_CreateFile
+	syscall
+	j 	$31
+	.end CreateFile
+	
 	.globl Open
 	.ent	Open
 Open:

@@ -6,7 +6,7 @@
 #ifndef PCB_H
 #define PCB_H
 
-#include "filetable.h"
+#include "ftable.h"
 #include "thread.h"
 #include "synch.h"
 
@@ -17,7 +17,7 @@ private:
     Semaphore* joinsem;         // semaphore cho quá trình join
     Semaphore* exitsem;         // semaphore cho quá trình exit
     Semaphore* multex;          // semaphore cho quá trình truy xuất đọc quyền 
-    FileTable ftable; 
+    FileTable* ftable;
 
     int exitcode;		
     int numwait;                // số tiến trình đã join
@@ -53,6 +53,11 @@ public:
 
     void SetFileName(char*);    // Set ten tien trinh
     char* GetFileName();        // Tra ve ten tien trinh
+
+    OpenFileID OpenFile(char* name, int type);
+    int CloseFile(OpenFileID fid);
+    int ReadFile(char *buffer, int charcount, OpenFileID id);
+    int WriteFile(char *buffer, int charcount, OpenFileID id);
 
 };
 

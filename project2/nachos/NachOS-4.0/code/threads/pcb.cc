@@ -34,10 +34,10 @@ PCB::PCB(int id)
 	this->joinsem = new Semaphore("joinsem",0);
 	this->exitsem = new Semaphore("exitsem",0);
 	this->multex = new Semaphore("multex",1);
+	this->ftable = new FileTable();
 }
 PCB::~PCB()
 {
-	
 	if(joinsem != NULL)
 		delete this->joinsem;
 	if(exitsem != NULL)
@@ -48,7 +48,9 @@ PCB::~PCB()
 	{		
 		thread->FreeSpace();
 		thread->Finish();
-		
+	}
+	if (ftable !=NULL){
+		delete this->ftable;
 	}
 }
 int PCB::GetID(){ return this->thread->processID; }
@@ -134,4 +136,21 @@ int PCB::Exec(char* filename, int id)
 	// Trả về id.
 	return id;
 
+}
+
+
+OpenFileID PCB::OpenFile(char* name, int type){
+	this->ftable->Open(name,type);
+}
+
+int PCB::CloseFile(OpenFileID fid){
+	this->ftable->Close(fid);
+}
+
+int PCB::ReadFile(char *buffer, int charcount, OpenFileID id){
+	this->ftable->Read(buffer,charcount,id);
+}
+
+int PCB::WriteFile(char *buffer, int charcount, OpenFileID id){
+	this->ftable->Write(buffer,charcount,id);
 }
