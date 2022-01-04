@@ -6,7 +6,7 @@
 #ifndef PCB_H
 #define PCB_H
 
-// #include "filetable.h"
+#include "filetable.h"
 #include "thread.h"
 #include "synch.h"
 
@@ -17,7 +17,7 @@ private:
     Semaphore* joinsem;         // semaphore cho quá trình join
     Semaphore* exitsem;         // semaphore cho quá trình exit
     Semaphore* multex;          // semaphore cho quá trình truy xuất đọc quyền 
-    // FileTable ftable; 
+    FileTable ftable; 
 
     int exitcode;		
     int numwait;                // số tiến trình đã join

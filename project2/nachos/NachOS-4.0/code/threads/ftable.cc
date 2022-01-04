@@ -1,5 +1,6 @@
 #include "ftable.h"
 #include "filesys.h"
+#include "synchconsole.h"
 #include "main.h"
 
 FileTable::FileTable() {
@@ -43,10 +44,23 @@ int FileTable::Close(OpenFileID fid) {
 
 int FileTable::Read(char *buffer, int charcount, OpenFileID fid) {
     // Kiem tra id cua file truyen vao co nam ngoai bang mo ta file khong
-    if (fid < 0 || fid > 14)
+    if (fid < 0 || fid > N_FILE)
     {
         printf("\nKhong the read vi id nam ngoai bang mo ta file.");
         return -1;
+    }
+
+    if (fid == 1) // stdout
+    {
+        printf("\nKhong the read file stdout.");
+        return -1;
+    }
+
+    if (fid == 0) // stdin
+    {
+        // Su dung ham Read cua lop SynchConsole de tra ve so byte thuc su doc duoc
+        int size = kernel->synchConsoleIn->GetChar();
+        return charcount;
     }
 
     // Kiem tra file co ton tai khong
@@ -55,19 +69,6 @@ int FileTable::Read(char *buffer, int charcount, OpenFileID fid) {
         printf("\nKhong the read vi file nay khong ton tai.");
         return -1;
     }
-
-    // if (fid == 1) // Xet truong hop doc file stdout (type quy uoc la 3) thi tra ve -1
-    // {
-    //     printf("\nKhong the read file stdout.");
-    //     return -1;
-    // }
-
-    // if (fid == 0)
-    // {
-    //     // Su dung ham Read cua lop SynchConsole de tra ve so byte thuc su doc duoc
-    //     int size = kernel->synchConsoleIn->Read(buffer, charcount);
-    //     return charcount;
-    // }
 
     // Xet truong hop doc file binh thuong thi tra ve so byte thuc su
     int oldPos = core[fid]->GetCurrentPos(); // Kiem tra thanh cong thi lay vi tri OldPos
@@ -84,9 +85,53 @@ int FileTable::Read(char *buffer, int charcount, OpenFileID fid) {
         return -2;
     }
 
-    return -1;
+    ASSERTNOTREACHED();
 }
 
-int FileTable::Write(char *buffer, int charcount, OpenFileID id) {
+int FileTable::Write(char *buffer, int charcount, OpenFileID fid) {
+    // Kiem tra fid cua file truyen vao co nam ngoai bang mo ta file khong
+    if (fid < 0 || fid > N_FILE)
+    {
+        printf("\nKhong the write vi fid nam ngoai bang mo ta file.");
+        return -1;
+    }
+
+    // read-only file and stdin cannot write
+    if (core[fid]->type == 1 || fid == 1)
+    {
+        printf("\nKhong the write file stdin hoac file only read.");
+        return -1;
+    }
+
     
+    if (fid == 1) // stdout
+    {
+        int i = 0;
+        for (int i = 0; buffer[i] != 0 && buffer[i] != '\n'; ++i) // Vong lap de write den khi gap ky tu '\n'
+        {
+            kernel->synchConsoleOut->PutChar(buffer[i]); // Su dung ham Write cua lop SynchConsole 
+        }
+        buffer[i] = '\n';
+        kernel->synchConsoleOut->PutChar(buffer[i]); // Write ky tu '\n'
+        return i - 1;
+    }
+
+    // Kiem tra file co ton tai khong
+    if (core[fid] == NULL)
+    {
+        printf("\nKhong the write vi file nay khong ton tai.");
+        return -1;
+    }
+
+    int oldPos = core[fid]->GetCurrentPos(); // Kiem tra thanh cong thi lay vi tri OldPos
+    // Xet truong hop ghi file read & write (type quy uoc la 0) thi tra ve so byte thuc su
+    if (core[fid]->type == 0) //stdout
+    {
+        if ((core[fid]->Write(buffer, charcount)) > 0)
+        {
+            // So byte thuc su = NewPos - OldPos
+            int newPos = core[fid]->GetCurrentPos();
+            return newPos - oldPos;
+        }
+    }
 }
