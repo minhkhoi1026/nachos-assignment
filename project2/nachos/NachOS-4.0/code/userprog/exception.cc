@@ -197,16 +197,16 @@ ExceptionHandler(ExceptionType which)
 					int charcount = kernel->machine->ReadRegister(5); // Lay charcount tu thanh ghi so 5
 					int id = kernel->machine->ReadRegister(6); // Lay id cua file tu thanh ghi so 6 
 					char* buffer = User2System(bufferUser,charcount);
-					int res = SysRead(buffer,charcount,id);
+					int size = SysRead(buffer,charcount,id);
+					System2User(bufferUser, size,buffer);
 					delete[] buffer;
-					if (res == 0) {
+					if (size == 0) {
 						DEBUG(dbgSys, "\nRead file successful");
 					}
 					else {
 						DEBUG(dbgSys, "\nError when read file!");
 					}
-
-					kernel->machine->WriteRegister(2, (int)res);
+					kernel->machine->WriteRegister(2, (int)size);
 					
 					IncreasePC();
 					return;

@@ -8,8 +8,8 @@ FileTable::FileTable() {
 	{
 		core[i] = NULL;
 	}
-    core[0]= new OpenFile(0);
-    core[1]= new OpenFile(0,1);
+    core[0]= new OpenFile(0,1);
+    core[1]= new OpenFile(0);
 }
 
 int FileTable::FindFreeSlot()
@@ -44,7 +44,7 @@ int FileTable::Close(OpenFileID fid) {
     return -1;
 }
 
-int FileTable::Read(char *buffer, int charcount, OpenFileID fid) {
+int FileTable::Read(char* buffer, int charcount, OpenFileID fid) {
     // Kiem tra id cua file truyen vao co nam ngoai bang mo ta file khong
     if (fid < 0 || fid > N_FILE)
     {
@@ -60,8 +60,14 @@ int FileTable::Read(char *buffer, int charcount, OpenFileID fid) {
 
     if (fid == 0) // stdin
     {
+        if (buffer!=NULL){
+            delete[] buffer;
+        }
+        buffer = new char[charcount];
         // Su dung ham Read cua lop SynchConsole de tra ve so byte thuc su doc duoc
-        int size = kernel->synchConsoleIn->GetChar();
+        for (int i=0;i<charcount;i++){
+            buffer[i] = kernel->synchConsoleIn->GetChar();
+        }
         return charcount;
     }
 
@@ -99,13 +105,12 @@ int FileTable::Write(char *buffer, int charcount, OpenFileID fid) {
     }
 
     // read-only file and stdin cannot write
-    if (core[fid]->type == 1 || fid == 1)
+    if (core[fid]->type == 1 || fid == 0)
     {
         printf("\nKhong the write file stdin hoac file only read.");
         return -1;
     }
 
-    
     if (fid == 1) // stdout
     {
         int i = 0;
