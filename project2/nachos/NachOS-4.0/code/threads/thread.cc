@@ -37,6 +37,7 @@ const int STACK_FENCEPOST = 0xdedbeef;
 Thread::Thread(char* threadName)
 {
     name = threadName;
+    // printf("HEHEHE %s", name);
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
@@ -202,6 +203,7 @@ Thread::Finish ()
 void
 Thread::Yield ()
 {
+    // printf("HEHEHE YIELD\n");
     Thread *nextThread;
     IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
     
@@ -211,8 +213,8 @@ Thread::Yield ()
     
     nextThread = kernel->scheduler->FindNextToRun();
     if (nextThread != NULL) {
-	kernel->scheduler->ReadyToRun(this);
-	kernel->scheduler->Run(nextThread, FALSE);
+        kernel->scheduler->ReadyToRun(this);
+        kernel->scheduler->Run(nextThread, FALSE);
     }
     (void) kernel->interrupt->SetLevel(oldLevel);
 }
@@ -240,6 +242,7 @@ Thread::Yield ()
 void
 Thread::Sleep (bool finishing)
 {
+    // printf("HEHEHE SLEEP\n");
     Thread *nextThread;
     
     ASSERT(this == kernel->currentThread);

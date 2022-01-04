@@ -114,7 +114,7 @@ else
 # change this if you create a new test program!
 PROGRAMS = add halt shell matmult sort segments readnum printnum \
  		readstring printstring iostring help randnum ascii \
-		readprintchar create_file pingpong checkfile
+		readprintchar create_file pingpong checkfile project2
 endif
 
 all: $(PROGRAMS)
@@ -122,6 +122,18 @@ all: $(PROGRAMS)
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
 
+sinhvien.o: sinhvien.c
+	$(CC) $(CFLAGS) -c sinhvien.c
+sinhvien: sinhvien.o sinhvien.o
+	$(LD) $(LDFLAGS) start.o sinhvien.o -o sinhvien.coff
+	$(COFF2NOFF) sinhvien.coff sinhvien
+
+project2.o: project2.c
+	$(CC) $(CFLAGS) -c project2.c
+project2: project2.o start.o sinhvien 
+	$(LD) $(LDFLAGS) start.o project2.o -o project2.coff
+	$(COFF2NOFF) project2.coff project2
+	
 pingpong.o: pingpong.c
 	$(CC) $(CFLAGS) -c pingpong.c
 pingpong: pingpong.o pingpong.o ping pong

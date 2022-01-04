@@ -352,17 +352,7 @@ int SysCreateSem(char* name, int semval){
     DEBUG(dbgSys, "\n Not enough memory in System");
     return -1;
   }
-  try{
-    kernel->semTable->Create(name, semval);
-  }
-  catch(const char* msg)
-  {
-    DEBUG(dbgSys, "\n Khong the khoi tao semaphore");
-    DEBUG(dbgSys, msg <<'\n');
-
-    return -1;				
-  }
-  return 0;
+  return kernel->semTable->Create(name, semval);
 }
 
 /************* system call for wait a semaphore *****************/
@@ -372,16 +362,7 @@ int SysWait(char* name){
     DEBUG(dbgSys, "\n Not enough memory in System");
     return -1;
   }
-  try{
-    kernel->semTable->Wait(name);
-  }
-  catch(const char* msg)
-  {
-    DEBUG(dbgSys, "\n Khong ton tai semaphore nay");
-    DEBUG(dbgSys, msg << '\n');
-    return -1;				
-  }
-  return 0;
+  return kernel->semTable->Wait(name);
 }
 
 
@@ -392,16 +373,7 @@ int SysSignal(char* name){
     DEBUG(dbgSys, "\n Not enough memory in System");
     return -1;
   }
-  try{
-    kernel->semTable->Signal(name);
-  }
-  catch(const char* msg)
-  {
-    DEBUG(dbgSys, "\n Khong ton tai ten semaphore nay!");
-    DEBUG(dbgSys, msg << '\n');
-    return -1;				
-  }
-  return 0;
+  return kernel->semTable->Signal(name);
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

@@ -75,13 +75,13 @@ int STable::Wait(char *name)
 			}
 		}
 	}
-	printf("Khong ton tai semaphore");
+	// printf("Khong ton tai semaphore %s\n", name);
 	return -1;
 }
 
 int STable::Signal(char *name)
 {
-	for(int i =0; i < MAX_SEMAPHORE; i++)
+	for(int i = 0; i < MAX_SEMAPHORE; i++)
 	{
 		// Kiem tra o thu i da duoc nap semaphore chua
 		if(bm->Test(i))
@@ -95,7 +95,7 @@ int STable::Signal(char *name)
 			}
 		}
 	}
-	printf("Khong ton tai semaphore");
+	// printf("Khong ton tai semaphore %s\n", name);
 	return -1;
 }
 

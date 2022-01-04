@@ -67,6 +67,7 @@ Machine::Run()
     for (;;) {
         OneInstruction(instr);
 		kernel->interrupt->OneTick();
+		//printf("ONETICK %s\n", kernel->currentThread->getName());
 		if (singleStep && (runUntilTime <= kernel->stats->totalTicks))
 			Debugger();
     }

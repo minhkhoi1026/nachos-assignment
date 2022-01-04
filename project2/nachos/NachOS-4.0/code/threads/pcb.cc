@@ -120,7 +120,7 @@ int PCB::Exec(char* filename, int id)
 
 	if(this->thread == NULL){
 		printf("\nPCB::Exec:: Not enough memory..!\n");
-        	multex->V();
+		multex->V();
 		return -1;
 	}
 	//  Đặt processID của thread này là id.
