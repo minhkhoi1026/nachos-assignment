@@ -1,4 +1,3 @@
-// pcb.h 
 // Process Control Block
 // Save all information to control the process
 // All rights reserved.
@@ -9,57 +8,54 @@
 #include "ftable.h"
 #include "thread.h"
 #include "synch.h"
+#define MAX_FILENAME_LENGTH 100
 
-// Process Control Block
-class PCB
-{
+class PCB {
 private:
-    Semaphore* joinsem;         // semaphore cho quá trình join
-    Semaphore* exitsem;         // semaphore cho quá trình exit
-    Semaphore* multex;          // semaphore cho quá trình truy xuất đọc quyền 
+    Semaphore* joinsem; // semaphore for join process
+    Semaphore* exitsem; // semaphore for exit process
+    Semaphore* multex; // semaphore to protect data
     FileTable* ftable;
 
     int exitcode;		
-    int numwait;                // số tiến trình đã join
+    int numwait; // n.o process that current process joined
 
-    char FileName[32];          // Ten cua tien trinh
+    char FileName[MAX_FILENAME_LENGTH]; // name of process
 
-    Thread* thread;             // Tien trinh cua chuong trinh
+    Thread* thread; // correspond process
 public:
-    int parentID;               // ID cua tien trinh cha
+    int parentID; // parent process id
     
-    char boolBG;                // Kiem tra neu la tien trinh nen
+    char boolBG; // check if current process is background process
     
-    PCB(int = 0);               // Contructor
-    ~PCB();                     // Destructor
+    PCB(int);
+    ~PCB();
 
-    int Exec(char*,int);        // Tao mot thread moi
-    int GetID();                // Trả về ProcessID của tiến trình gọi thực hiện
-    int GetNumWait();           // Trả về số lượng tiến trình chờ
+    int Exec(char*, int);
+    int GetID();
+    int GetNumWait();
 
 
-    void JoinWait();            // 1. Tiến trình cha đợi tiến trình con kết thúc
-                        
-    void ExitWait();             // 4. Tiến trình con kết thúc
+    void JoinWait();      
+    void ExitWait();
 
-    void JoinRelease();         // 2. Báo cho tiến trình cha thực thi tiếp
-    void ExitRelease();         // 3. Cho phép tiến trình con kết thúc
+    void JoinRelease();
+    void ExitRelease();
 
-    void IncNumWait();          // Tăng số tiến trình chờ
-    void DecNumWait();          // Giảm số tiến trình chờ
+    void IncNumWait();
+    void DecNumWait();
 
-    void SetExitCode(int);      // Đặt exitcode của tiến trình
-    int GetExitCode();          // Trả về exitcode
+    void SetExitCode(int);
+    int GetExitCode();
 
-    void SetFileName(char*);    // Set ten tien trinh
-    char* GetFileName();        // Tra ve ten tien trinh
+    void SetFileName(char*);
+    char* GetFileName();
 
     OpenFileID OpenFile(char* name, int type);
     int CloseFile(OpenFileID fid);
     int ReadFile(char *buffer, int charcount, OpenFileID id);
     int WriteFile(char *buffer, int charcount, OpenFileID id);
     int AppendFile(char *buffer, int charcount, OpenFileID id);
-
 };
 
 #endif // PCB_H

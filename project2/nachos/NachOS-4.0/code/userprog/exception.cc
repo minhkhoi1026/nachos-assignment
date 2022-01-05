@@ -281,11 +281,9 @@ ExceptionHandler(ExceptionType which)
 					int res = kernel->currentThread->processID;
 					DEBUG(dbgSys, "My ProcessID is " << res);
 					kernel->machine->WriteRegister(2, (int)res);
+
 					IncreasePC();
 					return;
-
-					ASSERTNOTREACHED();
-					break;
 				}
 				case SC_PrintNum: {
 					DEBUG(dbgSys, "My result of WriteNum is ");
@@ -380,21 +378,15 @@ ExceptionHandler(ExceptionType which)
 
 				case SC_CreateSemaphore: {
 					int bufferUser = kernel->machine->ReadRegister(4);
-					int semval = kernel->machine->ReadRegister(5);
+					int semVal = kernel->machine->ReadRegister(5);
 
-    				char *name = User2System(bufferUser, MAX_FILENAME_LENGTH + 1);
-					int res = SysCreateSem(name, semval);
+    				char* name = User2System(bufferUser, MAX_FILENAME_LENGTH + 1);
+					int res = SysCreateSem(name, semVal);
+					delete[] name;
 
 					kernel->machine->WriteRegister(2, res);
-
-      				delete[] name;
-
 					IncreasePC();
-
 					return;
-
-					ASSERTNOTREACHED();
-					break;
 				}
 
 				case SC_Wait: {
@@ -403,12 +395,10 @@ ExceptionHandler(ExceptionType which)
 					char *name = User2System(virtAddr, MAX_FILENAME_LENGTH + 1);
 					int res = SysWait(name);
 					delete[] name;
+
 					kernel->machine->WriteRegister(2, res);
 					IncreasePC();
 					return;
-					
-					ASSERTNOTREACHED();
-					break;
 				}
 
 				case SC_Signal:	{

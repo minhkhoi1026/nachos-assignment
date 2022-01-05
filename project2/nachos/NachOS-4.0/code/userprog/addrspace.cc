@@ -57,17 +57,8 @@ SwapHeader (NoffHeader *noffH)
 #endif
 }
 
-//----------------------------------------------------------------------
-// AddrSpace::AddrSpace
-// 	Create an address space to run a user program.
-//	Set up the translation from program memory to physical 
-//	memory.  For now, this is really simple (1:1), since we are
-//	only uniprogramming, and we have a single unsegmented page table
-//----------------------------------------------------------------------
-
-AddrSpace::AddrSpace()
-{
-}
+// constructor for addrspace, not init anything (Load will do that)
+AddrSpace::AddrSpace(){}
 
 //----------------------------------------------------------------------
 // AddrSpace::~AddrSpace
@@ -91,20 +82,17 @@ AddrSpace::~AddrSpace()
 //----------------------------------------------------------------------
 
 bool 
-AddrSpace::Load(char *filename) 
-{
+AddrSpace::Load(char *filename) {
     NoffHeader noffH;
     unsigned int i, size;
     OpenFile *executable = kernel->fileSystem->Open(filename);
  
-    if (executable == NULL)
-    {
-        printf("\nAddrspace::Error opening file: %s", filename);
-        DEBUG(dbgFile, "\n Error opening file.");
+    if (executable == NULL) {
+        DEBUG(dbgFile, "\n Error opening file: " << filename);
         return FALSE;
     }
  
-    //đọc header của file
+    // read file header
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
         (WordToHost(noffH.noffMagic) == NOFFMAGIC))
@@ -128,8 +116,6 @@ AddrSpace::Load(char *filename)
     size = numPages * PageSize;
  
     // Check the available memory enough to load new process
-    // debug
- 
     if (numPages > kernel->gPhysPageBitMap->NumClear())
     {
         printf("\nAddrSpace:Load: not enough memory for new process..!");
@@ -143,21 +129,19 @@ AddrSpace::Load(char *filename)
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++)
     {
-        pageTable[i].virtualPage = i; // for now, virtual page # = phys page #
+        pageTable[i].virtualPage = i;
         pageTable[i].physicalPage = kernel->gPhysPageBitMap->FindAndSet();
         pageTable[i].valid = TRUE;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE; // if the code segment was entirely on
-        // a separate page, we could set its
-        // pages to be read-only
-        // xóa các trang này trên memory
+        pageTable[i].readOnly = FALSE;
+        // init data on main memory
         bzero(&(kernel->machine->mainMemory[pageTable[i].physicalPage * PageSize]), PageSize);
     }
  
     kernel->addrLock->V();
  
-    // then, copy in the code and data segments into memory
+    // copy the code segment, read only segment and data segments into memory
     if (noffH.code.size > 0)
     {
         for (i = 0; i < numPages; i++)

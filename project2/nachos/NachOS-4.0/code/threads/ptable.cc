@@ -9,7 +9,7 @@ PTable::PTable(int size) {
     bm = new Bitmap(size);
     bmsem = new Semaphore("bmsem",1);
 
-    for (int i = 0; i < MAX_PROCESS; ++i){
+    for (int i = 0; i < MAX_PROCESS; ++i) {
 		pcb[i] = 0;
     }
 
@@ -109,8 +109,7 @@ int PTable::ExitUpdate(int exitcode) {
 	}
     
 	// check if process is exists
-    if(!IsExist(id))
-	{
+    if(!IsExist(id)) {
 		DEBUG(dbgThread, "The process with id = " << id << " not exists.");
 		return -1;
 	}

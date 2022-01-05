@@ -4,26 +4,17 @@
 #include "main.h"
 
 FileTable::FileTable() {
-	for (int i = 2; i < N_FILE; ++i)
-	{
+	for (int i = 2; i < N_FILE; ++i) {
 		core[i] = NULL;
 	}
     core[0]= new OpenFile(0,1);
     core[1]= new OpenFile(0);
 }
 
-FileTable::~FileTable() {
-    // for (int i = 0; i < N_FILE; ++i)
-    // {
-    //     if (core[i] != NULL)
-    //         delete core[i];
-    // }
-}
+FileTable::~FileTable() {}
 
-int FileTable::FindFreeSlot()
-{
-	for(int i = 2; i < N_FILE; i++)
-	{
+int FileTable::FindFreeSlot() {
+	for(int i = 2; i < N_FILE; i++) {
 		if (core[i] == NULL) return i;		
 	}
 	return -1;

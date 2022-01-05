@@ -340,19 +340,20 @@ int SysAdd(int op1, int op2)
 
 /************* system call for create semaphore *****************/
 int SysCreateSem(char* name, int semval){
-  if(name == NULL)
+  if (name == NULL)
   {
-    DEBUG(dbgSys, "\n Not enough memory in System");
+    DEBUG(dbgSys, "Not enough memory in system");
     return -1;
   }
+
   return kernel->semTable->Create(name, semval);
 }
 
 /************* system call for wait a semaphore *****************/
 int SysWait(char* name){
-  if(name == NULL)
+  if (name == NULL)
   {
-    DEBUG(dbgSys, "\n Not enough memory in System");
+    DEBUG(dbgSys, "Not enough memory in System");
     return -1;
   }
   return kernel->semTable->Wait(name);
@@ -361,9 +362,9 @@ int SysWait(char* name){
 
 /************* system call for signal a semaphore *****************/
 int SysSignal(char* name){
-  if(name == NULL)
+  if (name == NULL)
   {
-    DEBUG(dbgSys, "\n Not enough memory in System");
+    DEBUG(dbgSys, "Not enough memory in System");
     return -1;
   }
   return kernel->semTable->Signal(name);
