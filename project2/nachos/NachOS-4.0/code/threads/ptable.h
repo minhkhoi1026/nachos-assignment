@@ -42,6 +42,7 @@ public:
     int CloseFile(int pid, OpenFileID fid);
     int ReadFile(int pid, char *buffer, int charcount, OpenFileID id);
     int WriteFile(int pid, char *buffer, int charcount, OpenFileID id);
+    int AppendFile(int pid, char *buffer, int charcount, OpenFileID id);
 };
 #endif // PTABLE_H
 

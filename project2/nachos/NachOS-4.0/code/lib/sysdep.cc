@@ -403,6 +403,7 @@ int
 Close(int fd)
 {
     int retVal = close(fd);
+    // printf("\n\nCLQGVMAN%d\n\n",retVal);
     ASSERT(retVal >= 0); 
     return retVal;
 }

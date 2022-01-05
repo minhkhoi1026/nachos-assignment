@@ -200,7 +200,7 @@ ExceptionHandler(ExceptionType which)
 					int size = SysRead(buffer,charcount,id);
 					System2User(bufferUser, size,buffer);
 					delete[] buffer;
-					if (size == 0) {
+					if (size >= 0) {
 						DEBUG(dbgSys, "\nRead file successful");
 					}
 					else {
@@ -222,10 +222,10 @@ ExceptionHandler(ExceptionType which)
 					int res = SysWrite(buffer,charcount,id);
 					delete[] buffer;
 					if (res == 0) {
-						DEBUG(dbgSys, "\nCreate file successful");
+						DEBUG(dbgSys, "\nWrite file successful");
 					}
 					else {
-						DEBUG(dbgSys, "\nError when create file!");
+						DEBUG(dbgSys, "\nError when Write file!");
 					}
 
 					kernel->machine->WriteRegister(2, (int)res);
@@ -235,9 +235,40 @@ ExceptionHandler(ExceptionType which)
 					ASSERTNOTREACHED();
 					break;
 				}
+
+				case SC_Append:{
+					int bufferUser = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so buffer tu thanh ghi so 4
+					int charcount = kernel->machine->ReadRegister(5); // Lay charcount tu thanh ghi so 5
+					int id = kernel->machine->ReadRegister(6); // Lay id cua file tu thanh ghi so 6 
+					char* buffer = User2System(bufferUser,charcount);
+					int res = SysAppend(buffer,charcount,id);
+					delete[] buffer;
+					if (res == 0) {
+						DEBUG(dbgSys, "\nAppend file successful");
+					}
+					else {
+						DEBUG(dbgSys, "\nError when append file!");
+					}
+					kernel->machine->WriteRegister(2, (int)res);
+					IncreasePC();
+					return;
+					ASSERTNOTREACHED();
+					break;
+				}
+				
 				case SC_ReadNum: {
 					int res = SysReadNum();
 					DEBUG(dbgSys, "My result of ReadNum is " << res);
+					kernel->machine->WriteRegister(2, (int)res);
+					IncreasePC();
+					return;
+
+					ASSERTNOTREACHED();
+					break;
+				}				
+				case SC_ProcessID:{
+					int res = kernel->currentThread->processID;
+					DEBUG(dbgSys, "My ProcessID is " << res);
 					kernel->machine->WriteRegister(2, (int)res);
 					IncreasePC();
 					return;

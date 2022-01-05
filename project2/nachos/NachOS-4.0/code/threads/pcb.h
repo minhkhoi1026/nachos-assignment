@@ -58,6 +58,7 @@ public:
     int CloseFile(OpenFileID fid);
     int ReadFile(char *buffer, int charcount, OpenFileID id);
     int WriteFile(char *buffer, int charcount, OpenFileID id);
+    int AppendFile(char *buffer, int charcount, OpenFileID id);
 
 };
 

@@ -5,10 +5,8 @@
 
 PTable::PTable(int size)
 {
-
     if (size < 0)
         return;
-
     psize = size;
     bm = new Bitmap(size);
     bmsem = new Semaphore("bmsem",1);
@@ -16,9 +14,7 @@ PTable::PTable(int size)
     For(i,0,MAX_PROCESS){
 		pcb[i] = 0;
     }
-
 	bm->Mark(0);
-
 	pcb[0] = new PCB(0);
 	pcb[0]->SetFileName("./test/scheduler");
 	pcb[0]->parentID = -1;
@@ -29,10 +25,8 @@ PTable::~PTable()
     if( bm != 0 )
 	delete bm;
     
-    For(i,0,psize){
-		if(pcb[i] != 0)
-			delete pcb[i];
-    }
+	if(pcb[0] != 0)
+		delete pcb[0];
 		
 	if( bmsem != 0)
 		delete bmsem;
@@ -75,8 +69,6 @@ int PTable::ExecUpdate(char* name)
 
 	// parrentID là processID của currentThread
     pcb[index]->parentID = kernel->currentThread->processID;
-
-	
 	// Gọi thực thi phương thức Exec của lớp PCB.
 	int pid = pcb[index]->Exec(name,index);
 
@@ -194,4 +186,8 @@ int PTable::ReadFile(int pid, char *buffer, int charcount, OpenFileID fid) {
 
 int PTable::WriteFile(int pid, char *buffer, int charcount, OpenFileID fid) {
 	return this->pcb[pid]->WriteFile(buffer,charcount,fid);
+}
+
+int PTable::AppendFile(int pid, char *buffer, int charcount, OpenFileID fid) {
+	return this->pcb[pid]->AppendFile(buffer,charcount,fid);
 }

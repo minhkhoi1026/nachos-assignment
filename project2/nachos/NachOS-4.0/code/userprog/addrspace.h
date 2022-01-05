@@ -21,7 +21,6 @@
 class AddrSpace {
   public:
     AddrSpace();			// Create an address space.
-    AddrSpace(char* filename); // Create an address space base on filename
     ~AddrSpace();			// De-allocate an address space
 
     bool Load(char *fileName);		// Load a program into addr space from

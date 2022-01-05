@@ -4,21 +4,17 @@
 #include "pcb.h"
 #include "main.h"
 
-void StartProcess(int id)
+void StartProcess(void* pid)
 {
-    char* fileName = kernel->processTable->GetFileName(id);
+	int id = *((int*) pid);
+    char* filename = kernel->processTable->GetFileName(id);
 
-    AddrSpace *space;
-    space = new AddrSpace(fileName);
-
-	if(space == NULL)
-	{
-		printf("\nPCB::Exec : Can't create AddSpace.");
-		return;
+    AddrSpace *space = new AddrSpace();
+	ASSERT(space != (AddrSpace *)NULL);
+	if (space->Load(filename)) {  // load the program into the space
+		space->Execute();              // run the program
+		ASSERTNOTREACHED();            // Execute never returns
 	}
-	
-    space->Execute();	
-
 }
 
 PCB::PCB(int id)
@@ -44,13 +40,13 @@ PCB::~PCB()
 		delete this->exitsem;
 	if(multex != NULL)
 		delete this->multex;
+	if (ftable !=NULL){
+		delete this->ftable;
+	}
 	if(thread != NULL)
 	{		
 		thread->FreeSpace();
 		thread->Finish();
-	}
-	if (ftable !=NULL){
-		delete this->ftable;
 	}
 }
 int PCB::GetID(){ return this->thread->processID; }
@@ -130,14 +126,13 @@ int PCB::Exec(char* filename, int id)
 	this->parentID = kernel->currentThread->processID;
 	// Gọi thực thi Fork(StartProcess_2,id) => Ta cast thread thành kiểu int, sau đó khi xử ký hàm StartProcess ta cast Thread về đúng kiểu của nó.
 
- 	this->thread->Fork((VoidFunctionPtr) StartProcess, (void*) id);
+ 	this->thread->Fork((VoidFunctionPtr) StartProcess, (void*) &(this->thread->processID));
 
     multex->V();
 	// Trả về id.
 	return id;
 
 }
-
 
 OpenFileID PCB::OpenFile(char* name, int type){
 	return this->ftable->Open(name,type);
@@ -153,4 +148,8 @@ int PCB::ReadFile(char *buffer, int charcount, OpenFileID id){
 
 int PCB::WriteFile(char *buffer, int charcount, OpenFileID id){
 	return this->ftable->Write(buffer,charcount,id);
+}
+
+int PCB::AppendFile(char *buffer, int charcount, OpenFileID id){
+	return this->ftable->Append(buffer,charcount,id);
 }

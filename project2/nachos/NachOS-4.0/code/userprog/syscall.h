@@ -27,7 +27,7 @@
 #define SC_Open		6
 #define SC_Read		7
 #define SC_Write	8
-#define SC_Seek     9
+#define SC_Append     9
 #define SC_Close	10
 //Syscall cho multithreading
 #define SC_ThreadFork	11
@@ -50,6 +50,8 @@
 #define SC_CreateSemaphore	18
 #define SC_Wait			19
 #define SC_Signal		20
+
+#define SC_ProcessID    21
 
 #ifndef IN_ASM
 
@@ -92,6 +94,8 @@ void Exit(int exitStatus);
 
 /* A unique identifier for an executing user program (address space) */
 typedef int SpaceId;	
+
+typedef int OpenFileID;	
 
 /* A unique identifier for a thread within a task */
 typedef int ThreadId;
@@ -153,6 +157,8 @@ OpenFileId Open(char *name, int type);
  */
 int Write(char *buffer, int charcount, OpenFileId id);
 
+int Append(char *buffer, int charcount, OpenFileId id);
+
 /* Read "size" bytes from the open file into "buffer".  
  * Return the number of bytes actually read -- if the open file isn't
  * long enough, or if it is an I/O device, and there aren't enough 
@@ -203,6 +209,8 @@ int CreateSemaphore(char* name, int semval);
 int Wait(char* name);
 
 int Signal(char* name);
+
+int ProcessID();
 
 #endif /* IN_ASM */
 

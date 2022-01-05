@@ -172,6 +172,13 @@ int SysWrite(char *buffer, int charcount, OpenFileID fid) {
   return kernel->processTable->WriteFile(pid, buffer, charcount, fid);
 }
 
+/************* system call for append file *****************/
+int SysAppend(char *buffer, int charcount, OpenFileID fid) {
+  DEBUG(dbgSys, "Closing file with id: " << fid);
+  int pid = kernel->currentThread->processID;
+  return kernel->processTable->AppendFile(pid, buffer, charcount, fid);
+}
+
 /************* system call for read number *****************/
 int SysReadNum() {
   char digitChar;

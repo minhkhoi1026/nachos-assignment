@@ -265,6 +265,14 @@ OpenFile::Write(char *from, int numBytes) {
     return numWritten;
 }
 
+int 
+OpenFile::Append(char *from, int numBytes) {
+    int filesize = Length();
+    int numWritten = WriteAt(from, numBytes, filesize); 
+    currentOffset = filesize + numWritten;
+    return numWritten;
+}
+
 //Default Length method
 /*
 int Length() { Lseek(file, 0, 2); return Tell(file); }

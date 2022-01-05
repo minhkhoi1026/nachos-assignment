@@ -12,6 +12,14 @@ FileTable::FileTable() {
     core[1]= new OpenFile(0);
 }
 
+FileTable::~FileTable() {
+    // for (int i = 0; i < N_FILE; ++i)
+    // {
+    //     if (core[i] != NULL)
+    //         delete core[i];
+    // }
+}
+
 int FileTable::FindFreeSlot()
 {
 	for(int i = 2; i < N_FILE; i++)
@@ -139,6 +147,53 @@ int FileTable::Write(char *buffer, int charcount, OpenFileID fid) {
             // So byte thuc su = NewPos - OldPos
             int newPos = core[fid]->GetCurrentPos();
             return newPos - oldPos;
+        }
+    }
+}
+
+int FileTable::Append(char *buffer, int charcount, OpenFileID fid) {
+    // Kiem tra fid cua file truyen vao co nam ngoai bang mo ta file khong
+    if (fid < 0 || fid > N_FILE)
+    {
+        printf("\nKhong the write vi fid nam ngoai bang mo ta file.");
+        return -1;
+    }
+
+    // read-only file and stdin cannot write
+    if (core[fid]->type == 1 || fid == 0)
+    {
+        printf("\nKhong the write file stdin hoac file only read.");
+        return -1;
+    }
+
+    if (fid == 1) // stdout
+    {
+        int i = 0;
+        for (int i = 0; buffer[i] != 0 && buffer[i] != '\n'; ++i) // Vong lap de write den khi gap ky tu '\n'
+        {
+            kernel->synchConsoleOut->PutChar(buffer[i]); // Su dung ham Write cua lop SynchConsole 
+        }
+        buffer[i] = '\n';
+        kernel->synchConsoleOut->PutChar(buffer[i]); // Write ky tu '\n'
+        return i - 1;
+    }
+
+    // Kiem tra file co ton tai khong
+    if (core[fid] == NULL)
+    {
+        printf("\nKhong the write vi file nay khong ton tai.");
+        return -1;
+    }
+
+    if (core[fid]->type == 0)
+    {
+        int writesize = core[fid]->Append(buffer, charcount);
+        if (writesize > 0)
+        {
+            return writesize;
+        }
+        else{
+            return -1;
         }
     }
 }

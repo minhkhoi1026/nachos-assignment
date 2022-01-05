@@ -39,6 +39,7 @@ class OpenFile {
     int WriteAt(char *from, int numBytes, int position);
     int Read(char *into, int numBytes);
     int Write(char *from, int numBytes);
+    int Append(char *from, int numBytes);
     int Length();
 	int GetCurrentPos();
 

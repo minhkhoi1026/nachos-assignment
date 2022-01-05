@@ -188,6 +188,14 @@ Write:
 	j	$31
 	.end Write
 
+	.globl Append
+	.ent	Append
+Append:
+	addiu $2,$0,SC_Append
+	syscall
+	j	$31
+	.end Append
+
 	.globl Close
 	.ent	Close
 Close:
@@ -250,7 +258,15 @@ Signal:
 	addiu $2, $0, SC_Signal
 	syscall
 	j 	$31
-	.end Signal
+	.end Signal		
+
+	.globl ProcessID
+	.ent    ProcessID
+ProcessID:
+	addiu $2, $0, SC_ProcessID
+	syscall
+	j 	$31
+	.end ProcessID
 	
 /* dummy function to keep gcc happy */
         .globl  __main

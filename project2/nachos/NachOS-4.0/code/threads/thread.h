@@ -52,6 +52,7 @@
 // For simplicity, I just take the maximum over all architectures.
 
 #define MachineStateSize 75 
+#define MAX_FILENAME_LENGTH 100
 
 
 // Size of the thread's private execution stack.
@@ -114,7 +115,7 @@ class Thread {
 				// NULL if this is the main thread
 				// (If NULL, don't deallocate stack)
     ThreadStatus status;	// ready, running or blocked
-    char* name;
+    char name[MAX_FILENAME_LENGTH];
 
     void StackAllocate(VoidFunctionPtr func, void *arg);
     				// Allocate a stack for thread.

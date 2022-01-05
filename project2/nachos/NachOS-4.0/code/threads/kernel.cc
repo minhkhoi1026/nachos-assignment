@@ -138,6 +138,10 @@ Kernel::~Kernel()
     delete fileSystem;
     delete postOfficeIn;
     delete postOfficeOut;
+    delete addrLock;
+    delete gPhysPageBitMap;
+    delete processTable;
+    delete semTable;
     
     Exit(0);
 }
