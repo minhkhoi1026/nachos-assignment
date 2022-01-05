@@ -114,7 +114,7 @@ else
 # change this if you create a new test program!
 PROGRAMS = add halt shell matmult sort segments readnum printnum \
  		readstring printstring iostring help randnum ascii \
-		readprintchar create_file pingpong checkfile project2
+		readprintchar create_file pingpong checkfile project2 sinhvien ping pong
 endif
 
 all: $(PROGRAMS)
@@ -265,8 +265,6 @@ matmult: matmult.o start.o
 clean:
 	$(RM) -f *.o *.ii
 	$(RM) -f *.coff
-
-distclean: clean
 	$(RM) -f $(PROGRAMS)
 
 unknownhost:
