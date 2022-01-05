@@ -41,63 +41,61 @@ OpenFileID FileTable::Open(char* name, int type) {
 }
 
 int FileTable::Close(OpenFileID fid) {
-    if (fid >= 2 && fid < N_FILE) //Chi xu li khi fid nam trong [0, 14]
+    if (fid >= 2 && fid < N_FILE) // file id should be in range [0,N_FILE)
     {
-        if (core[fid]) //neu mo file thanh cong
+        if (core[fid]) // only close opened file
         {
-            delete core[fid]; //Xoa vung nho luu tru file
-            core[fid] = NULL; //Gan vung nho NULL
+            delete core[fid];
+            core[fid] = NULL;
         }
     }
     return -1;
 }
 
 int FileTable::Read(char* buffer, int charcount, OpenFileID fid) {
-    // Kiem tra id cua file truyen vao co nam ngoai bang mo ta file khong
-    if (fid < 0 || fid > N_FILE)
-    {
-        printf("\nKhong the read vi id nam ngoai bang mo ta file.");
+    // file id should be in range [0,N_FILE)
+    if (fid < 0 || fid > N_FILE) {
+        DEBUG(dbgFile, "\nThe file index should be in range [0," << N_FILE << ")");
         return -1;
     }
 
-    if (fid == 1) // stdout
-    {
-        printf("\nKhong the read file stdout.");
+    // handle stdout
+    if (fid == 1) {
+        DEBUG(dbgFile, "Cannot read stdin");
         return -1;
     }
 
-    if (fid == 0) // stdin
-    {
-        if (buffer!=NULL){
+    // handle stdin
+    if (fid == 0) {
+        if (buffer!=NULL) {
             delete[] buffer;
         }
         buffer = new char[charcount];
-        // Su dung ham Read cua lop SynchConsole de tra ve so byte thuc su doc duoc
-        for (int i=0;i<charcount;i++){
+        // Use synch console input to get char, loop charcount time
+        for (int i = 0; i < charcount; i++) {
             buffer[i] = kernel->synchConsoleIn->GetChar();
         }
         return charcount;
     }
 
-    // Kiem tra file co ton tai khong
+    // check if file is already opened
     if (core[fid] == NULL)
     {
-        printf("\nKhong the read vi file nay khong ton tai.");
+        DEBUG(dbgFile, "The file is not exists!");
         return -1;
     }
 
-    // Xet truong hop doc file binh thuong thi tra ve so byte thuc su
-    int oldPos = core[fid]->GetCurrentPos(); // Kiem tra thanh cong thi lay vi tri OldPos
+    // normal file read
+    int oldPos = core[fid]->GetCurrentPos(); 
     if ((core[fid]->Read(buffer, charcount)) > 0)
     {
-        // So byte thuc su = NewPos - OldPos
+        // number of readed bytes = new seek position - old seek position
         int newPos = core[fid]->GetCurrentPos();
         return newPos - oldPos;
     }
     else
     {
-        // Truong hop con lai la doc file co noi dung la NULL tra ve -2
-        //printf("\nDoc file rong.");
+        // file does not have any character to read
         return -2;
     }
 
@@ -105,46 +103,41 @@ int FileTable::Read(char* buffer, int charcount, OpenFileID fid) {
 }
 
 int FileTable::Write(char *buffer, int charcount, OpenFileID fid) {
-    // Kiem tra fid cua file truyen vao co nam ngoai bang mo ta file khong
-    if (fid < 0 || fid > N_FILE)
-    {
-        printf("\nKhong the write vi fid nam ngoai bang mo ta file.");
+    // file id should be in range [0,N_FILE)
+    if (fid < 0 || fid > N_FILE) {
+        DEBUG(dbgFile, "\nThe file index should be in range [0," << N_FILE << ")");
         return -1;
     }
 
     // read-only file and stdin cannot write
-    if (core[fid]->type == 1 || fid == 0)
-    {
-        printf("\nKhong the write file stdin hoac file only read.");
+    if (fid == 0 || core[fid]->type == 1) {
+        DEBUG(dbgFile, "Cannot write to stdin/read-only file");
         return -1;
     }
 
-    if (fid == 1) // stdout
-    {
+    // handle stdout
+    if (fid == 1) {
         int i = 0;
-        for (int i = 0; buffer[i] != 0 && buffer[i] != '\n'; ++i) // Vong lap de write den khi gap ky tu '\n'
+        // write until read maximum print character or read end of string
+        for (int i = 0; i < charcount && buffer[i] != 0; ++i)
         {
-            kernel->synchConsoleOut->PutChar(buffer[i]); // Su dung ham Write cua lop SynchConsole 
+            kernel->synchConsoleOut->PutChar(buffer[i]);
         }
-        buffer[i] = '\n';
-        kernel->synchConsoleOut->PutChar(buffer[i]); // Write ky tu '\n'
         return i - 1;
     }
 
-    // Kiem tra file co ton tai khong
+    // check if file is already opened
     if (core[fid] == NULL)
     {
-        printf("\nKhong the write vi file nay khong ton tai.");
+        DEBUG(dbgFile, "The file is not exists!");
         return -1;
     }
 
-    int oldPos = core[fid]->GetCurrentPos(); // Kiem tra thanh cong thi lay vi tri OldPos
-    // Xet truong hop ghi file read & write (type quy uoc la 0) thi tra ve so byte thuc su
-    if (core[fid]->type == 0) //stdout
-    {
-        if ((core[fid]->Write(buffer, charcount)) > 0)
-        {
-            // So byte thuc su = NewPos - OldPos
+    // normal file handle
+    int oldPos = core[fid]->GetCurrentPos();
+    if (core[fid]->type == 0) {
+        if ((core[fid]->Write(buffer, charcount)) > 0) {
+            // number of writed bytes = new seek position - old seek position
             int newPos = core[fid]->GetCurrentPos();
             return newPos - oldPos;
         }
@@ -152,48 +145,36 @@ int FileTable::Write(char *buffer, int charcount, OpenFileID fid) {
 }
 
 int FileTable::Append(char *buffer, int charcount, OpenFileID fid) {
-    // Kiem tra fid cua file truyen vao co nam ngoai bang mo ta file khong
-    if (fid < 0 || fid > N_FILE)
-    {
-        printf("\nKhong the write vi fid nam ngoai bang mo ta file.");
+    // file id should be in range [0,N_FILE)
+    if (fid < 0 || fid > N_FILE) {
+        DEBUG(dbgFile, "\nThe file index should be in range [0," << N_FILE << ")");
         return -1;
     }
 
     // read-only file and stdin cannot write
-    if (core[fid]->type == 1 || fid == 0)
-    {
-        printf("\nKhong the write file stdin hoac file only read.");
+    if (core[fid]->type == 1 || fid == 0) {
+        DEBUG(dbgFile, "Cannot write to stdin/read-only file");
         return -1;
     }
 
-    if (fid == 1) // stdout
-    {
+    // handle stdout
+    if (fid == 1) {
         int i = 0;
-        for (int i = 0; buffer[i] != 0 && buffer[i] != '\n'; ++i) // Vong lap de write den khi gap ky tu '\n'
-        {
-            kernel->synchConsoleOut->PutChar(buffer[i]); // Su dung ham Write cua lop SynchConsole 
+        for (int i = 0; i < charcount && buffer[i] != 0; ++i) {
+            kernel->synchConsoleOut->PutChar(buffer[i]);
         }
-        buffer[i] = '\n';
-        kernel->synchConsoleOut->PutChar(buffer[i]); // Write ky tu '\n'
         return i - 1;
     }
 
-    // Kiem tra file co ton tai khong
-    if (core[fid] == NULL)
-    {
-        printf("\nKhong the write vi file nay khong ton tai.");
+    // check if file is already opened
+    if (core[fid] == NULL) {
+        DEBUG(dbgFile, "The file is not exists!");
         return -1;
     }
 
-    if (core[fid]->type == 0)
-    {
+    // normal file handle
+    if (core[fid]->type == 0) {
         int writesize = core[fid]->Append(buffer, charcount);
-        if (writesize > 0)
-        {
-            return writesize;
-        }
-        else{
-            return -1;
-        }
+        return (writesize > 0) ? writesize : -1;
     }
 }

@@ -111,7 +111,10 @@ ExceptionHandler(ExceptionType which)
 				case SC_Exec:
 				{
 					int bufferUser = kernel->machine->ReadRegister(4);
-					SpaceId pid = SysExec(bufferUser);
+					
+					char* filename = User2System(bufferUser, MAX_FILENAME_LENGTH + 1);
+					int pid = SysExec(filename);
+					delete[] filename;
 
 					kernel->machine->WriteRegister(2, pid);
 					IncreasePC();
@@ -130,8 +133,9 @@ ExceptionHandler(ExceptionType which)
 				case SC_Exit:
 				{
 					int exitStatus = kernel->machine->ReadRegister(4);
-					int res = SysExit(exitStatus);
-					kernel->machine->WriteRegister(2, res);
+
+					SysExit(exitStatus);
+
 					IncreasePC();
 					return; 
 				}
@@ -156,18 +160,21 @@ ExceptionHandler(ExceptionType which)
 					break;
 				}
 				case SC_Open:{
-					int bufferUser = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so name tu thanh ghi so 4
-					int type = kernel->machine->ReadRegister(5); // Lay tham so type tu thanh ghi so 5
+					int bufferUser = kernel->machine->ReadRegister(4); // get pointer of name
+					int type = kernel->machine->ReadRegister(5); // get type of open file
 					char* filename;
-					filename = User2System(bufferUser, MAX_FILENAME_LENGTH); // Copy chuoi tu vung nho User Space sang System Space voi bo dem name dai MaxFileLength
+
+					filename = User2System(bufferUser, MAX_FILENAME_LENGTH); 
 					int res = SysOpen(filename, type);
 					delete[] filename;
+
 					if (res != -1) {
 						DEBUG(dbgSys, "\nOpen file successful");
 					}
 					else {
 						DEBUG(dbgSys, "\nError when open file!");
 					}
+
 					kernel->machine->WriteRegister(2, (int)res);
 					IncreasePC();
 					return;
@@ -193,13 +200,15 @@ ExceptionHandler(ExceptionType which)
 					break;
 				}
 				case SC_Read:{
-					int bufferUser = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so buffer tu thanh ghi so 4
-					int charcount = kernel->machine->ReadRegister(5); // Lay charcount tu thanh ghi so 5
-					int id = kernel->machine->ReadRegister(6); // Lay id cua file tu thanh ghi so 6 
+					int bufferUser = kernel->machine->ReadRegister(4); // get user buffer for assign result
+					int charcount = kernel->machine->ReadRegister(5); // get charcount as maximum number of byte to read
+					OpenFileID id = kernel->machine->ReadRegister(6); // get file id
+
 					char* buffer = User2System(bufferUser,charcount);
 					int size = SysRead(buffer,charcount,id);
 					System2User(bufferUser, size,buffer);
 					delete[] buffer;
+
 					if (size >= 0) {
 						DEBUG(dbgSys, "\nRead file successful");
 					}
@@ -215,12 +224,14 @@ ExceptionHandler(ExceptionType which)
 				}
 
 				case SC_Write:{
-					int bufferUser = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so buffer tu thanh ghi so 4
-					int charcount = kernel->machine->ReadRegister(5); // Lay charcount tu thanh ghi so 5
-					int id = kernel->machine->ReadRegister(6); // Lay id cua file tu thanh ghi so 6 
+					int bufferUser = kernel->machine->ReadRegister(4); // get user buffer for write result
+					int charcount = kernel->machine->ReadRegister(5); // get charcount as maximum number of byte to write
+					OpenFileID id = kernel->machine->ReadRegister(6); // get file id
+
 					char* buffer = User2System(bufferUser,charcount);
 					int res = SysWrite(buffer,charcount,id);
 					delete[] buffer;
+
 					if (res == 0) {
 						DEBUG(dbgSys, "\nWrite file successful");
 					}
@@ -368,11 +379,11 @@ ExceptionHandler(ExceptionType which)
 					break;
 
 				case SC_CreateSemaphore: {
-					int virtAddr = kernel->machine->ReadRegister(4);
+					int bufferUser = kernel->machine->ReadRegister(4);
 					int semval = kernel->machine->ReadRegister(5);
 
-    				char *name = User2System(virtAddr, MAX_FILENAME_LENGTH + 1);
-					int res = SysCreateSem(name,semval);
+    				char *name = User2System(bufferUser, MAX_FILENAME_LENGTH + 1);
+					int res = SysCreateSem(name, semval);
 
 					kernel->machine->WriteRegister(2, res);
 

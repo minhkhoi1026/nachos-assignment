@@ -20,11 +20,11 @@ int main() {
         }
     }
     Close(inp_file);
-    Wait("tape");
+    // Wait("tape");
     for (i=0;i<num_sv;i++){
         ProcessID[i] = Exec("./test/sinhvien");
     }
-    Signal("tape");
+    // Signal("tape");
     for (i=0;i<num_sv;i++){
         Join(ProcessID[i]);
     }

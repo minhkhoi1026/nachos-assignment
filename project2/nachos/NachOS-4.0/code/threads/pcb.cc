@@ -55,35 +55,13 @@ int PCB::GetExitCode() { return this->exitcode; }
 
 void PCB::SetExitCode(int ec){ this->exitcode = ec; }
 
-// Process tranlation to block
-// Wait for JoinRelease to continue exec
-void PCB::JoinWait()
-{
-	//Gọi joinsem->P() để tiến trình chuyển sang trạng thái block và ngừng lại, chờ JoinRelease để thực hiện tiếp.
-    joinsem->P();
-}
+void PCB::JoinWait(){ joinsem->P(); }
 
-// JoinRelease process calling JoinWait
-void PCB::JoinRelease()
-{ 
-	// Gọi joinsem->V() để giải phóng tiến trình gọi JoinWait().
-    joinsem->V();
-}
+void PCB::JoinRelease() { joinsem->V(); }
 
-// Let process tranlation to block state
-// Waiting for ExitRelease to continue exec
-void PCB::ExitWait()
-{ 
-	// Gọi exitsem-->V() để tiến trình chuyển sang trạng thái block và ngừng lại, chờ ExitReleaseđể thực hiện tiếp.
-    exitsem->P();
-}
+void PCB::ExitWait(){ exitsem->P(); }
 
-// Release wating process
-void PCB::ExitRelease() 
-{
-	// Gọi exitsem-->V() để giải phóng tiến trình đang chờ.
-    exitsem->V();
-}
+void PCB::ExitRelease() { exitsem->V(); }
 
 void PCB::IncNumWait()
 {
@@ -108,28 +86,25 @@ char* PCB::GetFileName() { return this->FileName; }
 int PCB::Exec(char* filename, int id)
 {  
 	
-    // Gọi mutex->P(); để giúp tránh tình trạng nạp 2 tiến trình cùng 1 lúc.
+    // down multex to avoid exec 2 program at the same time
 	multex->P();
-
-    // Kiểm tra thread đã khởi tạo thành công chưa, nếu chưa thì báo lỗi là không đủ bộ nhớ, gọi mutex->V() và return.             
+          
 	this->thread = new Thread(filename);
 
+	// check if thread is allocated
 	if(this->thread == NULL){
 		printf("\nPCB::Exec:: Not enough memory..!\n");
 		multex->V();
 		return -1;
 	}
-	//  Đặt processID của thread này là id.
-	this->thread->processID = id;
-	
-	// Đặt parrentID của thread này là processID của thread gọi thực thi Exec
-	this->parentID = kernel->currentThread->processID;
-	// Gọi thực thi Fork(StartProcess_2,id) => Ta cast thread thành kiểu int, sau đó khi xử ký hàm StartProcess ta cast Thread về đúng kiểu của nó.
 
+	// init thread info and call fork to put process into schedule queue
+	this->thread->processID = id;
+	this->parentID = kernel->currentThread->processID;
  	this->thread->Fork((VoidFunctionPtr) StartProcess, (void*) &(this->thread->processID));
 
+	// up mutex to return resource
     multex->V();
-	// Trả về id.
 	return id;
 
 }

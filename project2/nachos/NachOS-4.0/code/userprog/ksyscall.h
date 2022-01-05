@@ -66,16 +66,8 @@ char* User2System(int virtAddr,int limit)
   return kernelBuf;
 }
 
-int SysExit(int exitStatus) {
-  if(exitStatus != 0) {
-    return exitStatus;
-  }			
-  
-  int res = kernel->processTable->ExitUpdate(exitStatus);
-
-  kernel->currentThread->FreeSpace();
-  kernel->currentThread->Finish();
-  return res;
+void SysExit(int exitStatus) {
+  kernel->processTable->ExitUpdate(exitStatus);
 }
 
 /************* system call for execute file *****************/
@@ -84,29 +76,23 @@ int SysJoin(int pid) {
 }
 
 /************* system call for execute file *****************/
-SpaceId SysExec(int bufferUser) {
-  char* name;
-  name = User2System(bufferUser, MAX_FILENAME_LENGTH + 1); // Lay ten chuong trinh, nap vao kernel
-
-  if (!name)
-  {
-    DEBUG(dbgSys, "\n Not enough memory in System");
+int SysExec(char* filename) {
+  if (!filename) {
+    DEBUG(dbgSys, "\n Not enough memory in system");
     return -1;
   }
-  OpenFile *oFile = kernel->fileSystem->Open(name);
+
+  // check if executeable file exists
+  OpenFile *oFile = kernel->fileSystem->Open(filename);
   if (!oFile)
   {
-    DEBUG(dbgSys, "\nExec:: Can't open this file.");
+    DEBUG(dbgSys, "Exec:: Can't open this file.");
     return -1;
   }
   delete oFile;
   
-  DEBUG(dbgThread, name);
   // Return child process id
-  int pid = kernel->processTable->ExecUpdate(name); 
-  
-  delete[] name;	
-  return pid;
+  return  kernel->processTable->ExecUpdate(filename);
 }
 
 /************* system call for create file *****************/
@@ -127,22 +113,22 @@ int SysCreateFile(char* filename) {
 
 /************* system call for open file *****************/
 int SysOpen(char* filename, int type) {
-  // read filename from user space
-  // if kernel buffer's memory is not allocated then halt system
   if (!filename) {
     DEBUG(dbgSys, "Cannot allocate kernel buffer for name string!");
     return -1;
   }
+
   DEBUG(dbgSys, "Opening " << filename);  
-  if (type == 0 || type == 1) //chi xu li khi type = 0 hoac 1
+
+  if (type == 0 || type == 1)
   {
     int pid = kernel->currentThread->processID;
     return kernel->processTable->OpenFile(pid,filename,type);
   }
-  else if (type == 2) {  // xu li stdin
+  else if (type == 2) {  // if type is 2 then return stdin
     return STDIN;
   }
-  else if (type == 3) {  // xu li stdout
+  else if (type == 3) {  // if type is 3 then return stdout
     return STDOUT;
   }
   else {
