@@ -100,9 +100,9 @@ AddrSpace::Load(char *filename) {
     ASSERT(noffH.noffMagic == NOFFMAGIC);
  
     kernel->addrLock->P();
- 
+
+// how big is address space?
 #ifdef RDATA
-    // how big is address space?
     size = noffH.code.size + noffH.readonlyData.size + noffH.initData.size +
            noffH.uninitData.size + UserStackSize;
     // we need to increase the size
@@ -125,7 +125,7 @@ AddrSpace::Load(char *filename) {
         return FALSE;
     }
  
-    // first, set up the translation
+    // set up the translation page
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++)
     {
@@ -141,26 +141,31 @@ AddrSpace::Load(char *filename) {
  
     kernel->addrLock->V();
  
-    // copy the code segment, read only segment and data segments into memory
+    // copy code segment into memory
     if (noffH.code.size > 0)
     {
         for (i = 0; i < numPages; i++)
-            executable->ReadAt(&(kernel->machine->mainMemory[noffH.code.virtualAddr]) + (pageTable[i].physicalPage * PageSize),
+            executable->ReadAt(&(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
+                                    + (pageTable[i].physicalPage * PageSize),
                                PageSize, noffH.code.inFileAddr + (i * PageSize));
     }
  
+    // copy initial data segment into memory
     if (noffH.initData.size > 0)
     {
         for (i = 0; i < numPages; i++)
-            executable->ReadAt(&(kernel->machine->mainMemory[noffH.initData.virtualAddr]) + (pageTable[i].physicalPage * PageSize),
+            executable->ReadAt(&(kernel->machine->mainMemory[noffH.initData.virtualAddr]) 
+                                    + (pageTable[i].physicalPage * PageSize),
                                PageSize, noffH.initData.inFileAddr + (i * PageSize));
     }
- 
+
+    // copy read-only segment into memory
 #ifdef RDATA
     if (noffH.readonlyData.size > 0)
     {
         for (i = 0; i < numPages; i++)
-            executable->ReadAt(&(kernel->machine->mainMemory[noffH.readonlyData.virtualAddr]) + (pageTable[i].physicalPage * PageSize),
+            executable->ReadAt(&(kernel->machine->mainMemory[noffH.readonlyData.virtualAddr]) 
+                                    + (pageTable[i].physicalPage * PageSize),
                                PageSize, noffH.readonlyData.inFileAddr + (i * PageSize));
     }
 #endif
