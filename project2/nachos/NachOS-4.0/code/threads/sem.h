@@ -16,7 +16,7 @@ public:
 	}
 
 	~Sem() {
-		if(sem) delete sem;
+		if (sem) delete sem;
 	}
 
 	// down(sem)

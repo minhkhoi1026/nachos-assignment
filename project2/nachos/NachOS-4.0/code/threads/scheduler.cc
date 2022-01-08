@@ -60,7 +60,6 @@ Scheduler::ReadyToRun (Thread *thread)
     DEBUG(dbgThread, "Putting thread on ready list: " << thread->getName());
 
     thread->setStatus(READY);
-    //printf("HAHAHA %d\n", thread->processID);
     readyList->Append(thread);
 }
 

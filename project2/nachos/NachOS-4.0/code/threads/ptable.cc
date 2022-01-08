@@ -19,13 +19,13 @@ PTable::PTable(int size) {
 }
 
 PTable::~PTable() {
-    if( bm != 0 )
+    if (bm != 0 )
 	delete bm;
     
-	if(pcb[0] != 0)
+	if (pcb[0] != 0)
 		delete pcb[0];
 		
-	if( bmsem != 0)
+	if (bmsem != 0)
 		delete bmsem;
 }
 
@@ -41,7 +41,7 @@ int PTable::ExecUpdate(char* filename) {
 	}
 
 	// ensure the program does not exec itself, which may cause infinity recursion
-	if( strcmp(filename, kernel->currentThread->getName()) == 0 )
+	if (strcmp(filename, kernel->currentThread->getName()) == 0 )
 	{
 		DEBUG(dbgThread, "PTable::Exec : Process cannot not execute itself.");	
 		bmsem->V();
@@ -52,7 +52,7 @@ int PTable::ExecUpdate(char* filename) {
 	int index = this->GetFreeSlot();
 
     // Check if have free slot
-	if(index < 0)
+	if (index < 0)
 	{
 		printf("There is no free slot.");
 		bmsem->V();
@@ -73,13 +73,13 @@ int PTable::ExecUpdate(char* filename) {
 
 int PTable::JoinUpdate(int id) {
 	// check if id is valid
-	if(!IsExist(id)) {
+	if (!IsExist(id)) {
 		DEBUG(dbgThread, "Can't join in process with id = " << id);
 		return -1;
 	}
 
 	// check if running process is parent of join process
-	if(kernel->currentThread->processID != pcb[id]->parentID) {
+	if (kernel->currentThread->processID != pcb[id]->parentID) {
 		DEBUG(dbgThread, "Cannot join process which is not parent process of given process.");
 		return -1;
 	}
@@ -87,7 +87,7 @@ int PTable::JoinUpdate(int id) {
     // increase number of child process that parent need to wait 
 	// and down join semaphore to wait for child process
 	pcb[pcb[id]->parentID]->IncNumWait();
-	pcb[id]->JoinWait();
+	pcb[pcb[id]->parentID]->JoinWait();
 
 	// get exit code from child process
 	int ec = pcb[id]->GetExitCode();
@@ -103,13 +103,13 @@ int PTable::ExitUpdate(int exitcode) {
 	int id = kernel->currentThread->processID;
 
 	// if main process is exiting then halt the system
-	if (id == 0) {	
+	if (id == 0) {
 		kernel->interrupt->Halt();
 		return exitcode;
 	}
     
 	// check if process is exists
-    if(!IsExist(id)) {
+    if (!IsExist(id)) {
 		DEBUG(dbgThread, "The process with id = " << id << " not exists.");
 		return -1;
 	}
@@ -119,7 +119,7 @@ int PTable::ExitUpdate(int exitcode) {
 	pcb[pcb[id]->parentID]->DecNumWait();
     
     // up join semaphore to release parent process
-	pcb[id]->JoinRelease();
+	pcb[pcb[id]->parentID]->JoinRelease();
     // down exit semaphore to wait parent process allow current process to exit
 	pcb[id]->ExitWait();
 	

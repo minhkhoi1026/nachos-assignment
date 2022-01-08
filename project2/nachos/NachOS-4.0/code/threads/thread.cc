@@ -37,7 +37,6 @@ const int STACK_FENCEPOST = 0xdedbeef;
 Thread::Thread(char* threadName)
 {
     strcpy(name, threadName);
-    // printf("HEHEHE %s", name);
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
@@ -202,7 +201,6 @@ Thread::Finish ()
 void
 Thread::Yield ()
 {
-    // printf("HEHEHE YIELD\n");
     Thread *nextThread;
     IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
     
@@ -241,7 +239,6 @@ Thread::Yield ()
 void
 Thread::Sleep (bool finishing)
 {
-    // printf("HEHEHE SLEEP\n");
     Thread *nextThread;
     
     ASSERT(this == kernel->currentThread);
