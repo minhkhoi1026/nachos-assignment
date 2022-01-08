@@ -26,10 +26,9 @@ int main() {
 
     for (i = 0; i < num_sv; i++) {
         ProcessID[i] = Exec("./test/sinhvien");
-        Join(ProcessID[i]);
     }
 
-    // for (i = 0; i < num_sv; i++) {
-    //     Join(ProcessID[i]);
-    // }
+    for (i = 0; i < num_sv; i++) {
+        Join(ProcessID[i]);
+    }
 }
