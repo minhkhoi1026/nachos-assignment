@@ -4,7 +4,9 @@ int main()
 {
     int i,j,k;
     OpenFileID out_file;
+    // output data for write
     char data[2];
+    data[0]= (char)(ProcessID() + '0');
     data[1] = ' ';
 
     Wait("tape");
@@ -12,23 +14,17 @@ int main()
     Signal("tape");
 
     for (i = 0;i<10;i++){
-        Wait("tape");
-        data[0]= (char)(ProcessID() + '0');
+        Wait("tape"); // wait for tape
         
-        PrintNum(ProcessID());
-        PrintString("\n");
-
+        // slee pfor random time, then append result to file
+        k = RandomNum()%100+100;
+        for(j = 0 ; j < k; j++){}
         Append(data,2,out_file);
 
-        k = RandomNum()%10000+100000;
-        for(j = 0 ; j < k; j++){}
-
-        Signal("tape");
+        Signal("tape"); // release tape
     }
 
-    Wait("tape");
     Close(out_file);
-    Signal("tape");
 
     Exit(0);
 }

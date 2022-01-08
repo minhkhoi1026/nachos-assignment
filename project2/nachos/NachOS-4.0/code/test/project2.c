@@ -31,4 +31,6 @@ int main() {
     for (i = 0; i < num_sv; i++) {
         Join(ProcessID[i]);
     }
+
+    Exit(0);
 }
