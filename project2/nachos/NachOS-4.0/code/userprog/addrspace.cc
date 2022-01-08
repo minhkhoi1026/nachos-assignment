@@ -101,18 +101,17 @@ AddrSpace::Load(char *filename) {
  
     kernel->addrLock->P();
 
-// how big is address space?
+    int numCodePages = divRoundUp(noffH.code.size, PageSize);
+    int numDataPages = divRoundUp(noffH.initData.size, PageSize);
+    int numRemainPages = divRoundUp(noffH.uninitData.size + UserStackSize, PageSize);
+
+    // how many page the user program need?
 #ifdef RDATA
-    size = noffH.code.size + noffH.readonlyData.size + noffH.initData.size +
-           noffH.uninitData.size + UserStackSize;
-    // we need to increase the size
-    // to leave room for the stack
+    int numReadOnlyPages = divRoundUp(noffH.readonlyData.size, PageSize);
+    numPages = numCodePages + numDataPages + numReadOnlyPages + numRemainPages;
 #else
-    // how big is address space?
-    size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStackSize; // we need to increase the size
-                                                                                          // to leave room for the stack
+    numPages = numCodePages + numDataPages + numRemainPages;
 #endif
-    numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
  
     // Check the available memory enough to load new process
@@ -144,7 +143,7 @@ AddrSpace::Load(char *filename) {
     // copy code segment into memory
     if (noffH.code.size > 0)
     {
-        for (i = 0; i < numPages; i++)
+        for (i = 0; i < numCodePages; i++)
             executable->ReadAt(&(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
                                     + (pageTable[i].physicalPage * PageSize),
                                PageSize, noffH.code.inFileAddr + (i * PageSize));
@@ -153,7 +152,7 @@ AddrSpace::Load(char *filename) {
     // copy initial data segment into memory
     if (noffH.initData.size > 0)
     {
-        for (i = 0; i < numPages; i++)
+        for (i = 0; i < numDataPages; i++)
             executable->ReadAt(&(kernel->machine->mainMemory[noffH.initData.virtualAddr]) 
                                     + (pageTable[i].physicalPage * PageSize),
                                PageSize, noffH.initData.inFileAddr + (i * PageSize));
@@ -163,7 +162,7 @@ AddrSpace::Load(char *filename) {
 #ifdef RDATA
     if (noffH.readonlyData.size > 0)
     {
-        for (i = 0; i < numPages; i++)
+        for (i = 0; i < numReadOnlyPages; i++)
             executable->ReadAt(&(kernel->machine->mainMemory[noffH.readonlyData.virtualAddr]) 
                                     + (pageTable[i].physicalPage * PageSize),
                                PageSize, noffH.readonlyData.inFileAddr + (i * PageSize));
