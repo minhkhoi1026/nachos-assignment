@@ -114,6 +114,10 @@ AddrSpace::Load(char *filename) {
 #endif
     size = numPages * PageSize;
  
+    DEBUG(dbgAddr, "\nSize: " << size << 
+                " | numPages: " << numPages << 
+                " | PageSize: " << PageSize << 
+                " | Numclear: " << kernel->gPhysPageBitMap->NumClear() << "\n");  
     // Check the available memory enough to load new process
     if (numPages > kernel->gPhysPageBitMap->NumClear())
     {
