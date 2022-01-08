@@ -103,11 +103,11 @@ int PTable::ExitUpdate(int exitcode) {
     // get id of process from current running thread
 	int id = kernel->currentThread->processID;
 
-	// if main process is exiting then halt the system
-	if (id == 0) {
-		kernel->interrupt->Halt();
-		return exitcode;
-	}
+	// // if main process is exiting then halt the system
+	// if (id == 0) {
+	// 	kernel->interrupt->Halt();
+	// 	return exitcode;
+	// }
     
 	// check if process is exists
     if (!IsExist(id)) {
