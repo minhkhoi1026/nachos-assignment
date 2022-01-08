@@ -87,7 +87,7 @@ int PTable::JoinUpdate(int id) {
     // increase number of child process that parent need to wait 
 	// and down join semaphore to wait for child process
 	pcb[pcb[id]->parentID]->IncNumWait();
-	pcb[pcb[id]->parentID]->JoinWait();
+	pcb[id]->JoinWait();
 
 	// get exit code from child process
 	int ec = pcb[id]->GetExitCode();
@@ -119,7 +119,7 @@ int PTable::ExitUpdate(int exitcode) {
 	pcb[pcb[id]->parentID]->DecNumWait();
     
     // up join semaphore to release parent process
-	pcb[pcb[id]->parentID]->JoinRelease();
+	pcb[id]->JoinRelease();
     // down exit semaphore to wait parent process allow current process to exit
 	pcb[id]->ExitWait();
 	

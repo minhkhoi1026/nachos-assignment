@@ -35,7 +35,6 @@ public:
     int GetID();
     int GetNumWait();
 
-
     void JoinWait();      
     void ExitWait();
 
