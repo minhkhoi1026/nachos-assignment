@@ -9,14 +9,12 @@ int main()
     data[0]= (char)(ProcessID() + '0');
     data[1] = ' ';
 
-    Wait("tape");
     out_file = Open("output.txt",0);
-    Signal("tape");
 
     for (i = 0;i<10;i++){
         Wait("tape"); // wait for tape
         
-        // slee pfor random time, then append result to file
+        // sleep for random time, then append result to file
         k = RandomNum()%100+100;
         for(j = 0 ; j < k; j++){}
         Append(data,2,out_file);

@@ -5,11 +5,11 @@ int main() {
     int i;
     int ProcessID[5];
     char data[10];
-	OpenFileID inp_file = Open("input.txt", 1);
-    CreateFile("output.txt");
-    CreateSemaphore("tape",1);
 
+    // open input file and read input
+	OpenFileID inp_file = Open("input.txt", 1);
     if (inp_file == -1){
+        PrintString("File input khong ton tai, nhap bang ban phim!");
         num_sv = ReadNum();
     } 
     else {
@@ -23,6 +23,10 @@ int main() {
         }
     }
     Close(inp_file);
+
+    // create output file and create semaphore for student
+    CreateFile("output.txt");
+    CreateSemaphore("tape",1);
 
     for (i = 0; i < num_sv; i++) {
         ProcessID[i] = Exec("./test/sinhvien");
