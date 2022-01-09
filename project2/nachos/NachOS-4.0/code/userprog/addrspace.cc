@@ -165,6 +165,7 @@ AddrSpace::Load(char *filename) {
     int lastReadonlyPageSize = (noffH.readonlyData.size - firstReadonlyPageSize - 1) % PageSize + 1;
 
     if (noffH.readonlyData.size > 0) {
+        // copy first part of readonly data into remain space of last code page
         if (lastCodePageSize != PageSize && numCodePages > 0) {
             executable->ReadAt(
                 &(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
@@ -173,7 +174,8 @@ AddrSpace::Load(char *filename) {
                 noffH.readonlyData.inFileAddr
             );
         }
- 
+
+        // copy remain readonly data into main memory
         for (int j = 0; j < numReadonlyPages; ++j, ++i) {
             executable->ReadAt(
                 &(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
@@ -190,6 +192,7 @@ AddrSpace::Load(char *filename) {
     int lastDataPageSize = (noffH.initData.size - firstDataPageSize - 1) % PageSize + 1;
 
     if (noffH.initData.size > 0) {
+        // copy first part of initial data into remain space of last readonly page
         if (lastReadonlyPageSize != PageSize && numReadonlyPages > 0) {
             executable->ReadAt(
                 &(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
@@ -199,6 +202,7 @@ AddrSpace::Load(char *filename) {
             );
         }
 
+        // copy remain initial data into main memory
         for (int j = 0; j < numDataPages; ++j, ++i) {
             executable->ReadAt(
                 &(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
@@ -208,13 +212,14 @@ AddrSpace::Load(char *filename) {
             );
         }
     }
-#else
+#else // not exitst RDATA
     // copy init data segment into memory
     int firstDataPageSize = min(PageSize - lastCodePageSize, noffH.initData.size);
     int numDataPages = divRoundUp(noffH.initData.size - firstDataPageSize, PageSize);
     int lastDataPageSize = (noffH.initData.size - firstDataPageSize - 1) % PageSize + 1;
 
     if (noffH.initData.size > 0) {
+        // copy first part of initial data into remain space of last code page
         if (lastCodePageSize != PageSize && numCodePages > 0) {
             executable->ReadAt(
                 &(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
@@ -224,6 +229,7 @@ AddrSpace::Load(char *filename) {
             );
         }
 
+        // copy remain initial data into main memory
         for (int j = 0; j < numDataPages; ++j, ++i) {
             executable->ReadAt(
                 &(kernel->machine->mainMemory[noffH.code.virtualAddr]) 
