@@ -248,7 +248,6 @@ int SysReadChar() {
       return wordChar;
   }
   else {
-    //printf("Ky tu nhap vao khong hop le!\n");
     DEBUG('u', "\nERROR: Ky tu nhap vao khong hop le!");
     return '\0';
   }
@@ -262,7 +261,6 @@ void SysPrintChar(char wordChar) {
     kernel->synchConsoleOut->PutChar(wordChar);
   }
   else {
-    //printf("Ky tu in khong hop le!\n");
     DEBUG('u', "\nERROR: Ky tu in khong hop le!");
   }
 }

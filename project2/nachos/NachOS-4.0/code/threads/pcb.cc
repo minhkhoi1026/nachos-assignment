@@ -86,7 +86,7 @@ int PCB::Exec(char* filename, int id) {
 
 	// check if thread is allocated
 	if (this->thread == NULL) {
-		printf("\nPCB::Exec:: Not enough memory..!\n");
+		DEBUG(dbgThread, "PCB::Exec:: Not enough memory..!");
 		multex->V();
 		return -1;
 	}

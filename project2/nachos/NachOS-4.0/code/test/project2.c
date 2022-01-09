@@ -25,7 +25,7 @@ int main() {
     Close(inp_file);
 
     // create output file and create semaphore for student
-    // CreateFile("output.txt");
+    CreateFile("output.txt");
     CreateSemaphore("tape",1);
 
     for (i = 0; i < num_sv; i++) {

@@ -35,7 +35,7 @@ int PTable::ExecUpdate(char* filename) {
 	
 	// check if filename is null
 	if (filename == NULL) {
-		DEBUG(dbgThread, "Can't not execute because filename is NULL.");
+		DEBUG(dbgThread, "PTable::ExecUpdate: Can't not execute because filename is NULL.");
 		bmsem->V();
 		return -1;
 	}
@@ -43,7 +43,7 @@ int PTable::ExecUpdate(char* filename) {
 	// ensure the program does not exec itself, which may cause infinity recursion
 	if (strcmp(filename, kernel->currentThread->getName()) == 0 )
 	{
-		DEBUG(dbgThread, "PTable::Exec : Process cannot not execute itself.");	
+		DEBUG(dbgThread, "PTable::ExecUpdate: Process cannot not execute itself.");	
 		bmsem->V();
 		return -1;
 	}
@@ -54,7 +54,7 @@ int PTable::ExecUpdate(char* filename) {
     // Check if have free slot
 	if (index < 0)
 	{
-		printf("There is no free slot.");
+		DEBUG(dbgThread, "PTable::ExecUpdate: There is no free slot.");
 		bmsem->V();
 		return -1;
 	}
@@ -72,13 +72,13 @@ int PTable::ExecUpdate(char* filename) {
 int PTable::JoinUpdate(int id) {
 	// check if id is valid
 	if (!IsExist(id)) {
-		DEBUG(dbgThread, "Can't join in process with id = " << id);
+		DEBUG(dbgThread, "PTable::ExecUpdate: Can't join in process with id = " << id);
 		return -1;
 	}
 
 	// check if running process is parent of join process
 	if (kernel->currentThread->processID != pcb[id]->parentID) {
-		DEBUG(dbgThread, "Cannot join process which is not parent process of given process.");
+		DEBUG(dbgThread, "PTable::ExecUpdate: Cannot join process which is not parent process of given process.");
 		return -1;
 	}
 
@@ -109,7 +109,7 @@ int PTable::ExitUpdate(int exitcode) {
     
 	// check if process is exists
     if (!IsExist(id)) {
-		DEBUG(dbgThread, "The process with id = " << id << " not exists.");
+		DEBUG(dbgThread, "PTable::ExecUpdate: The process with id = " << id << " not exists.");
 		return -1;
 	}
 
