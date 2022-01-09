@@ -62,8 +62,6 @@ int PTable::ExecUpdate(char* filename) {
 	// create new process with correspond index
 	pcb[index] = new PCB(index);
 	// init infomation of new process then execute
-	pcb[index]->SetFileName(filename);
-    pcb[index]->parentID = kernel->currentThread->processID;
 	int pid = pcb[index]->Exec(filename, index);
 
 	// up semaphore to return resource

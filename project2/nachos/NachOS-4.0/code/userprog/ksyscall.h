@@ -120,6 +120,7 @@ int SysOpen(char* filename, int type) {
 
   DEBUG(dbgSys, "Opening " << filename);  
 
+  
   if (type == 0 || type == 1)
   {
     int pid = kernel->currentThread->processID;

@@ -8,7 +8,9 @@ FileTable::FileTable() {
 		core[i] = NULL;
 	}
     core[0]= new OpenFile(0,1);
+    core[0]->type = 1;
     core[1]= new OpenFile(0);
+    core[0]->type = 0;
 }
 
 FileTable::~FileTable() {}
@@ -26,8 +28,9 @@ OpenFileID FileTable::Open(char* name, int type) {
     if (freeSlot == -1) return -1;
 
     int fileDescriptor = OpenForReadWrite(name, FALSE);
-    if (fileDescriptor == -1) return NULL;
+    if (fileDescriptor == -1) return -1;
     core[freeSlot] = new OpenFile(fileDescriptor, type);
+
     return freeSlot;
 }
 
@@ -51,14 +54,14 @@ int FileTable::Read(char* buffer, int charcount, OpenFileID fid) {
     }
 
     // handle stdout
-    if (fid == 1) {
-        DEBUG(dbgFile, "Cannot read stdin");
+    if (fid == STDOUT) {
+        DEBUG(dbgFile, "Cannot read stdout");
         return -1;
     }
 
     // handle stdin
-    if (fid == 0) {
-        if (buffer!=NULL) {
+    if (fid == STDIN) {
+        if (buffer != NULL) {
             delete[] buffer;
         }
         buffer = new char[charcount];
@@ -101,13 +104,13 @@ int FileTable::Write(char *buffer, int charcount, OpenFileID fid) {
     }
 
     // read-only file and stdin cannot write
-    if (fid == 0 || core[fid]->type == 1) {
+    if (fid == STDIN || core[fid]->type == 1) {
         DEBUG(dbgFile, "Cannot write to stdin/read-only file");
         return -1;
     }
 
     // handle stdout
-    if (fid == 1) {
+    if (fid == STDOUT) {
         int i = 0;
         // write until read maximum print character or read end of string
         for (int i = 0; i < charcount && buffer[i] != 0; ++i)
@@ -143,13 +146,13 @@ int FileTable::Append(char *buffer, int charcount, OpenFileID fid) {
     }
 
     // read-only file and stdin cannot write
-    if (core[fid]->type == 1 || fid == 0) {
+    if (core[fid]->type == 1 || fid == STDIN) {
         DEBUG(dbgFile, "Cannot write to stdin/read-only file");
         return -1;
     }
 
     // handle stdout
-    if (fid == 1) {
+    if (fid == STDOUT) {
         int i = 0;
         for (int i = 0; i < charcount && buffer[i] != 0; ++i) {
             kernel->synchConsoleOut->PutChar(buffer[i]);

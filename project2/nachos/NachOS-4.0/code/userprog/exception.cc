@@ -164,7 +164,7 @@ ExceptionHandler(ExceptionType which)
 					int type = kernel->machine->ReadRegister(5); // get type of open file
 					char* filename;
 
-					filename = User2System(bufferUser, MAX_FILENAME_LENGTH); 
+					filename = User2System(bufferUser, MAX_FILENAME_LENGTH);
 					int res = SysOpen(filename, type);
 					delete[] filename;
 

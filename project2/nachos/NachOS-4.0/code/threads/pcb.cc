@@ -79,7 +79,7 @@ void PCB::SetFileName(char* fn) {
 char* PCB::GetFileName() { return this->FileName; }
 
 int PCB::Exec(char* filename, int id) {  
-    // down multex to avoid exec 2 program at the same time
+    // down multex to get thread resource
 	multex->P();
           
 	this->thread = new Thread(filename);
@@ -93,6 +93,7 @@ int PCB::Exec(char* filename, int id) {
 
 	// init thread info and call fork to put process into schedule queue
 	this->thread->processID = id;
+	this->SetFileName(filename);
 	this->parentID = kernel->currentThread->processID;
  	this->thread->Fork((VoidFunctionPtr) StartProcess, (void*) &(this->thread->processID));
 

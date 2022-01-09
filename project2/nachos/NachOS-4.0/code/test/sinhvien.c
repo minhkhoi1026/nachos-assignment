@@ -9,7 +9,10 @@ int main()
     data[0]= (char)(ProcessID() + '0');
     data[1] = ' ';
 
-    out_file = Open("output.txt",0);
+    out_file = Open("output.txt", 0);
+    if (out_file == -1) {
+        out_file = Open("output.txt",3);
+    }
 
     for (i = 0;i<10;i++){
         Wait("tape"); // wait for tape
